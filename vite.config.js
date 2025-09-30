@@ -7,14 +7,12 @@ export default defineConfig({
   resolve: {
     alias: {
       'buffer': 'buffer/',
-      'util': 'util',
+      'util': 'util', // Polyfill Node.js util module
     },
   },
   define: {
     'process.env.NODE_DEBUG': JSON.stringify(''),
-    'process.env': { NODE_ENV: JSON.stringify('production') },
-    'util.debuglog': '(() => {})',
-    'util.inspect': '(() => {})',
+    'process.env': { NODE_ENV: JSON.stringify('production') }, // Ensure production mode for lit
   },
   build: {
     rollupOptions: {
@@ -22,7 +20,7 @@ export default defineConfig({
         '@walletconnect/utils',
         '@reown/appkit',
         '@reown/appkit-controllers',
-        '@solana/spl-type-length-value',
+        '@solana/spl-type-length-value', // Externalize to avoid crypto issues
       ],
       onwarn(warning, warn) {
         if (warning.code === 'UNUSED_EXTERNAL_IMPORT' || warning.message.includes('/*#__PURE__*/')) {
