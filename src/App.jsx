@@ -12,6 +12,8 @@ import { WalletConnectorProvider } from "@orderly.network/wallet-connector";
 import { useOrderEntry } from '@orderly.network/hooks';
 import { OrderSide, OrderType } from '@orderly.network/types';
 
+const modalforper = 1;
+
 const RAYDIUM_API = 'https://transaction-v1.raydium.io';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
@@ -43,7 +45,7 @@ function WalletIconButton() {
 }
 
 function ComingSoonModal({ isOpen, onClose, setViewMode }) {
-  if (!isOpen) return null;
+  if (!isOpen || modalforper === 0) return null;
 
   return (
     <div style={{
@@ -127,7 +129,7 @@ function TokenSelector({ viewMode, tokens, perpMarkets, selectedToken, selectedP
       {viewMode === 'perps' ? (
         perpMarkets.map(market => (
           <option key={market.symbol} value={market.symbol}>
-            {market.symbol.replace('PERP_', '')}/USDC
+            {market.symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
           </option>
         ))
       ) : (
@@ -192,6 +194,7 @@ function TradingViewChart({ symbol, marketType }) {
 
 function OrderBook({ symbol }) {
   const [orderBook, setOrderBook] = useState({ asks: [], bids: [] });
+  const baseSymbol = symbol ? symbol.replace('PERP_', '').replace('_USDC', '') : '';
 
   useEffect(() => {
     if (!symbol) return;
@@ -201,8 +204,8 @@ function OrderBook({ symbol }) {
         const response = await axios.get(`${ORDERLY_API}/orderbook/${symbol}`);
         if (response.data.success) {
           setOrderBook({
-            asks: response.data.data.asks.slice(0, 15),
-            bids: response.data.data.bids.slice(0, 15)
+            asks: response.data.data.asks.slice(0, 15).map(([price, size]) => [parseFloat(price), parseFloat(size)]),
+            bids: response.data.data.bids.slice(0, 15).map(([price, size]) => [parseFloat(price), parseFloat(size)])
           });
         }
       } catch (error) {
@@ -219,34 +222,34 @@ function OrderBook({ symbol }) {
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem', height: '100%', overflow: 'hidden' }}>
-      <h3 style={{ fontSize: '0.75rem', marginBottom: '0.5rem', color: '#999' }}>Order book</h3>
+      <h3 style={{ fontSize: '0.75rem', marginBottom: '0.5rem', color: '#999' }}>Order Book</h3>
       
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', fontSize: '0.625rem', color: '#666', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid #333' }}>
-        <div>Price(USDC)</div>
-        <div style={{ textAlign: 'right' }}>Qty(ETH)</div>
-        <div style={{ textAlign: 'right' }}>Total(ETH)</div>
+        <div>Price (USDC)</div>
+        <div style={{ textAlign: 'right' }}>Qty ({baseSymbol})</div>
+        <div style={{ textAlign: 'right' }}>Total (USDC)</div>
       </div>
 
       <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
         {orderBook.asks.map((ask, i) => (
           <div key={`ask-${i}`} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', fontSize: '0.625rem', padding: '0.2rem 0' }}>
-            <div style={{ color: '#ff4d4f' }}>{parseFloat(ask[0]).toFixed(2)}</div>
-            <div style={{ textAlign: 'right', color: '#ccc' }}>{parseFloat(ask[1]).toFixed(4)}</div>
-            <div style={{ textAlign: 'right', color: '#888' }}>{(parseFloat(ask[0]) * parseFloat(ask[1])).toFixed(2)}</div>
+            <div style={{ color: '#ff4d4f' }}>{ask[0].toFixed(2)}</div>
+            <div style={{ textAlign: 'right', color: '#ccc' }}>{ask[1].toFixed(4)}</div>
+            <div style={{ textAlign: 'right', color: '#888' }}>{(ask[0] * ask[1]).toFixed(2)}</div>
           </div>
         ))}
       </div>
 
       <div style={{ padding: '0.75rem 0', fontSize: '0.875rem', fontWeight: 'bold', color: '#52c41a', textAlign: 'center', borderTop: '1px solid #333', borderBottom: '1px solid #333', margin: '0.5rem 0' }}>
-        {orderBook.bids[0] ? parseFloat(orderBook.bids[0][0]).toFixed(2) : '---'}
+        {orderBook.bids[0] ? orderBook.bids[0][0].toFixed(2) : '---'}
       </div>
 
       <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
         {orderBook.bids.map((bid, i) => (
           <div key={`bid-${i}`} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', fontSize: '0.625rem', padding: '0.2rem 0' }}>
-            <div style={{ color: '#52c41a' }}>{parseFloat(bid[0]).toFixed(2)}</div>
-            <div style={{ textAlign: 'right', color: '#ccc' }}>{parseFloat(bid[1]).toFixed(4)}</div>
-            <div style={{ textAlign: 'right', color: '#888' }}>{(parseFloat(bid[0]) * parseFloat(bid[1])).toFixed(2)}</div>
+            <div style={{ color: '#52c41a' }}>{bid[0].toFixed(2)}</div>
+            <div style={{ textAlign: 'right', color: '#ccc' }}>{bid[1].toFixed(4)}</div>
+            <div style={{ textAlign: 'right', color: '#888' }}>{(bid[0] * bid[1]).toFixed(2)}</div>
           </div>
         ))}
       </div>
@@ -280,7 +283,7 @@ function PerpTradingPanel({ symbol, markPrice, indexPrice, fundingRate }) {
   useEffect(() => {
     setValue('side', side === 'buy' ? OrderSide.BUY : OrderSide.SELL);
     setValue('order_type', orderType === 'limit' ? OrderType.LIMIT : OrderType.MARKET);
-    if (orderType === 'limit' && price) setValue('price', price);
+    if (orderType === 'limit' && price) setValue('price', parseFloat(price));
   }, [side, orderType, price, setValue]);
 
   const handleOrder = async () => {
@@ -414,7 +417,7 @@ function PerpTradingPanel({ symbol, markPrice, indexPrice, fundingRate }) {
 
       <div style={{ marginBottom: '0.5rem' }}>
         <label style={{ display: 'block', fontSize: '0.625rem', color: '#999', marginBottom: '0.4rem' }}>
-          Qty <span style={{ color: '#666' }}>ETH</span>
+          Qty <span style={{ color: '#666' }}>{symbol}</span>
         </label>
         <input 
           type="number" 
@@ -757,7 +760,7 @@ function App() {
   const [selectedPerp, setSelectedPerp] = useState(null);
   const [perpInfo, setPerpInfo] = useState({});
   const [tokenMeta, setTokenMeta] = useState([]);
-  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [showComingSoon, setShowComingSoon] = useState(modalforper === 1);
 
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -836,7 +839,12 @@ function App() {
       const fundingRes = await axios.get(`${ORDERLY_API}/funding_rates`);
       
       if (futuresRes.data.success) {
-        const markets = futuresRes.data.data.rows.slice(0, 10);
+        const markets = futuresRes.data.data.rows.slice(0, 10).map(market => ({
+          ...market,
+          mark_price: parseFloat(market.mark_price) || 0,
+          index_price: parseFloat(market.index_price) || 0,
+          change_24h: parseFloat(market.change_24h) || 0
+        }));
         setPerpMarkets(markets);
         if (!selectedPerp && markets.length > 0) {
           setSelectedPerp(markets[0]);
@@ -846,7 +854,7 @@ function App() {
         if (fundingRes.data.success) {
           const fundingMap = {};
           fundingRes.data.data.rows.forEach(item => {
-            fundingMap[item.symbol] = item.est_funding_rate;
+            fundingMap[item.symbol] = parseFloat(item.est_funding_rate) || 0;
           });
           setPerpInfo(prev => ({ ...prev, funding: fundingMap }));
         }
@@ -919,7 +927,7 @@ function App() {
                       <button
                         onClick={() => {
                           setViewMode('perps');
-                          setShowComingSoon(true);
+                          setShowComingSoon(modalforper === 1);
                         }}
                         className="nav-btn"
                         style={{
@@ -959,9 +967,12 @@ function App() {
 
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: '250px 1fr 350px'
+                  gridTemplateColumns: '250px 1fr 350px',
+                  gridTemplateAreas: '"sidebar main trade"',
+                  height: 'calc(100vh - 60px)'
                 }} className="main-container">
                   <div className="markets-sidebar" style={{
+                    gridArea: 'sidebar',
                     background: '#1a1a1a',
                     borderRight: '1px solid #262626',
                     overflowY: 'auto',
@@ -974,15 +985,24 @@ function App() {
                           key={market.symbol}
                           className="token-card"
                           onClick={() => handleSelectPerp(market)}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            padding: '0.5rem',
+                            marginBottom: '0.5rem',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            background: selectedPerp?.symbol === market.symbol ? '#333' : 'transparent'
+                          }}
                         >
                           <div>
-                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{market.symbol.replace('PERP_', '')}</div>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{market.symbol.replace('PERP_', '').replace('_USDC', '')}</div>
                             <div style={{ fontSize: '0.75rem', color: '#666' }}>{market.type}</div>
                           </div>
                           <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '0.875rem' }}>{parseFloat(market.mark_price).toFixed(2)}</div>
-                            <div style={{ fontSize: '0.75rem', color: parseFloat(market.change_24h) >= 0 ? '#52c41a' : '#ff4d4f' }}>
-                              {parseFloat(market.change_24h) >= 0 ? '+' : ''}{parseFloat(market.change_24h).toFixed(2)}%
+                            <div style={{ fontSize: '0.875rem' }}>{market.mark_price.toFixed(2)}</div>
+                            <div style={{ fontSize: '0.75rem', color: market.change_24h >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                              {market.change_24h >= 0 ? '+' : ''}{market.change_24h.toFixed(2)}%
                             </div>
                           </div>
                         </div>
@@ -993,6 +1013,15 @@ function App() {
                           key={token.address}
                           className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''}`}
                           onClick={() => setSelectedToken(token)}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            padding: '0.5rem',
+                            marginBottom: '0.5rem',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            background: selectedToken?.address === token.address ? '#333' : 'transparent'
+                          }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             {token.logoURI && <img src={token.logoURI} alt={token.symbol} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />}
@@ -1012,7 +1041,12 @@ function App() {
                     )}
                   </div>
 
-                  <div className="main-content" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className="main-content" style={{
+                    gridArea: 'main',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden'
+                  }}>
                     <div style={{ padding: '0.75rem' }}>
                       <TokenSelector
                         viewMode={viewMode}
@@ -1031,26 +1065,26 @@ function App() {
                         <div className="info-box" style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                             <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
-                              {selectedPerp.symbol.replace('PERP_', '')}/USDC
+                              {selectedPerp.symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
                             </h2>
                             <div>
                               <span style={{ color: '#999', fontSize: '0.75rem' }}>Mark: </span>
-                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{parseFloat(selectedPerp.mark_price).toFixed(2)}</span>
+                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{selectedPerp.mark_price.toFixed(2)}</span>
                             </div>
                             <div>
                               <span style={{ color: '#999', fontSize: '0.75rem' }}>Index: </span>
-                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{parseFloat(selectedPerp.index_price).toFixed(2)}</span>
+                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{selectedPerp.index_price.toFixed(2)}</span>
                             </div>
                             <div>
                               <span style={{ color: '#999', fontSize: '0.75rem' }}>Funding: </span>
-                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: parseFloat(perpInfo.funding?.[selectedPerp.symbol] || 0) >= 0 ? '#52c41a' : '#ff4d4f' }}>
-                                {parseFloat(perpInfo.funding?.[selectedPerp.symbol] || 0).toFixed(4)}%
+                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: (perpInfo.funding?.[selectedPerp.symbol] || 0) >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                                {(perpInfo.funding?.[selectedPerp.symbol] || 0).toFixed(4)}%
                               </span>
                             </div>
                             <div>
                               <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
-                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: parseFloat(selectedPerp.change_24h) >= 0 ? '#52c41a' : '#ff4d4f' }}>
-                                {parseFloat(selectedPerp.change_24h).toFixed(2)}%
+                              <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: selectedPerp.change_24h >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                                {selectedPerp.change_24h >= 0 ? '+' : ''}{selectedPerp.change_24h.toFixed(2)}%
                               </span>
                             </div>
                           </div>
@@ -1089,32 +1123,36 @@ function App() {
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: viewMode === 'perps' ? '2fr 1fr' : '1fr',
-                      minHeight: '300px'
+                      flex: 1,
+                      overflow: 'hidden'
                     }}>
                       <TradingViewChart
-                        symbol={viewMode === 'perps' ? selectedPerp?.symbol.replace('PERP_', '') : selectedToken?.symbol}
+                        symbol={viewMode === 'perps' ? selectedPerp?.symbol.replace('PERP_', '').replace('_USDC', '') : selectedToken?.symbol}
                         marketType={viewMode}
                       />
                       {viewMode === 'perps' && <OrderBook symbol={selectedPerp?.symbol} />}
                     </div>
+                  </div>
 
-                    <div className="trading-panel" style={{
-                      background: '#1a1a1a',
-                      borderLeft: '1px solid #262626',
-                      padding: '0.75rem',
-                      overflowY: 'auto'
-                    }}>
-                      {viewMode === 'perps' ? (
+                  <div className="trading-panel" style={{
+                    gridArea: 'trade',
+                    background: '#1a1a1a',
+                    borderLeft: '1px solid #262626',
+                    padding: '0.75rem',
+                    overflowY: 'auto'
+                  }}>
+                    {viewMode === 'perps' ? (
+                      selectedPerp && (
                         <PerpTradingPanel
-                          symbol={selectedPerp?.symbol.replace('PERP_', '')}
-                          markPrice={parseFloat(selectedPerp?.mark_price)}
-                          indexPrice={parseFloat(selectedPerp?.index_price)}
-                          fundingRate={parseFloat(perpInfo.funding?.[selectedPerp?.symbol])}
+                          symbol={selectedPerp.symbol.replace('PERP_', '').replace('_USDC', '')}
+                          markPrice={selectedPerp.mark_price}
+                          indexPrice={selectedPerp.index_price}
+                          fundingRate={perpInfo.funding?.[selectedPerp.symbol] || 0}
                         />
-                      ) : (
-                        <SpotInterface selectedToken={selectedToken} allTokens={tokens} />
-                      )}
-                    </div>
+                      )
+                    ) : (
+                      <SpotInterface selectedToken={selectedToken} allTokens={tokens} />
+                    )}
                   </div>
                 </div>
               </div>
