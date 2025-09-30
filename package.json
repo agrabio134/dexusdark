@@ -10,15 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@orderly.network/hooks": "^2.7.3",
-    "@orderly.network/portfolio": "^2.7.3",
-    "@orderly.network/react": "^1.5.17",
-    "@orderly.network/react-app": "^2.7.3",
-    "@orderly.network/types": "^2.7.3",
-    "@orderly.network/ui": "^2.7.3",
-    "@orderly.network/ui-scaffold": "^2.7.3",
-    "@orderly.network/wallet-connector": "^2.7.3",
-    "@orderly.network/web3-onboard": "^1.5.17",
+  
     "@raydium-io/raydium-sdk-v2": "^0.2.29-alpha",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
