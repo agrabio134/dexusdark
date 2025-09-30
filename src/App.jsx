@@ -1,4 +1,3 @@
-// App.jsx
 import { useState, useEffect, useMemo, useRef, Component } from 'react';
 import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
@@ -8,7 +7,6 @@ import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import axios from 'axios';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import PerpetualsInterface from './components/PerpetualsInterface';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
@@ -632,23 +630,6 @@ function App() {
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>DEX</h1>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {/* <button
-                    onClick={() => setViewMode('perps')}
-                    className="nav-btn"
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      background: viewMode === 'perps' ? '#333' : 'transparent',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Perpetuals
-                  </button> */}
-
-
                   <button
                     onClick={() => setViewMode('spot')}
                     className="nav-btn"
@@ -664,23 +645,23 @@ function App() {
                   >
                     Spot
                   </button>
-                                    <button
-                  onClick={() => {
-                    window.location.href = 'https://dex.orderly.network/usdark-5755/perp/PERP_ETH_USDC/';
-                  }}
-                  className="nav-btn"
-                  style={{
-                    padding: '0.4rem 0.8rem',
-                    background: viewMode === 'perps' ? '#333' : 'transparent',
-                    border: 'none',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  Perpetuals
-                </button>
+                  <button
+                    onClick={() => {
+                      window.location.href = `https://dex.orderly.network/usdark-5755/perp/${selectedPerpSymbol}/`;
+                    }}
+                    className="nav-btn"
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      background: viewMode === 'perps' ? '#333' : 'transparent',
+                      border: 'none',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    Perpetuals
+                  </button>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -805,53 +786,46 @@ function App() {
                   />
                 </div>
 
-                {viewMode === 'perps' ? (
-                  <PerpetualsInterface
-                    selectedPerpSymbol={selectedPerpSymbol}
-                    setSelectedPerpSymbol={setSelectedPerpSymbol}
-                  />
-                ) : (
-                  selectedToken && (
-                    <>
-                      <div
-                        className="info-box"
-                        style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
-                            {selectedToken.symbol}/USDC
-                          </h2>
-                          <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatPrice(selectedToken.price)}</span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
-                            <span
-                              style={{
-                                fontWeight: 'bold',
-                                fontSize: '0.75rem',
-                                color: selectedToken.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
-                              }}
-                            >
-                              {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
-                            </span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Volume: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.volume24h)}</span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Liquidity: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.liquidity)}</span>
-                          </div>
+                {selectedToken && (
+                  <>
+                    <div
+                      className="info-box"
+                      style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
+                          {selectedToken.symbol}/USDC
+                        </h2>
+                        <div>
+                          <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
+                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatPrice(selectedToken.price)}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
+                          <span
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: '0.75rem',
+                              color: selectedToken.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
+                            }}
+                          >
+                            {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
+                          </span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Volume: </span>
+                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.volume24h)}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#999', fontSize: '0.75rem' }}>Liquidity: </span>
+                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.liquidity)}</span>
                         </div>
                       </div>
-                      <div style={{ flex: 1, overflow: 'hidden' }}>
-                        <TradingViewChart symbol={selectedToken?.symbol} marketType={viewMode} />
-                      </div>
-                    </>
-                  )
+                    </div>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <TradingViewChart symbol={selectedToken?.symbol} marketType={viewMode} />
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -865,14 +839,7 @@ function App() {
                   overflowY: 'auto',
                 }}
               >
-                {viewMode === 'perps' ? (
-                  <PerpetualsInterface
-                    selectedPerpSymbol={selectedPerpSymbol}
-                    setSelectedPerpSymbol={setSelectedPerpSymbol}
-                  />
-                ) : (
-                  <SpotInterface selectedToken={selectedToken} allTokens={tokens} />
-                )}
+                <SpotInterface selectedToken={selectedToken} allTokens={tokens} />
               </div>
             </div>
           </div>
