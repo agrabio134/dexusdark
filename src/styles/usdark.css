@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+    color: #000000;
+    font-family: 'Orbitron', monospace;
+    min-height: 100vh;
+}
+
+.nav-btn {
+    background: linear-gradient(45deg, #000000ea, #000000ea);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.token-card {
+    background: rgba(37, 99, 235, 0.1);
+    border: 2px solid #000000ea;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.token-card:hover {
+    background: rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.token-card.selected {
+    background: rgba(0, 0, 0, 0.15);
+    border: 3px solid #000000;
+}
+
+.info-box {
+    background: rgba(37, 99, 235, 0.1);
+    border: 2px solid #000000ea;
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.title-glow {
+    text-shadow: 
+        0 0 10px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(0, 0, 0, 0.4);
+    animation: title-glow 2s infinite alternate;
+}
+
+@keyframes title-glow {
+    0% { text-shadow: 0 0 10px rgba(0, 0, 0, 0.8); }
+    100% { text-shadow: 0 0 25px rgba(0, 0, 0, 1); }
+}
+
+.wallet-adapter-button {
+    background: linear-gradient(45deg, #000000ea, #000000ea) !important;
+}
