@@ -172,7 +172,7 @@ function TradingViewChart({ symbol, marketType, isUSDARK }) {
           style={{
             position: 'relative',
             width: '100%',
-            paddingBottom: '125%',
+            paddingBottom: '65%',
           }}
         >
           <iframe
