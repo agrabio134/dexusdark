@@ -794,7 +794,7 @@ function App() {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
-                          {selectedToken.symbol}/USDC
+                          {selectedToken.symbol}/USDT
                         </h2>
                         <div>
                           <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
