@@ -135,7 +135,7 @@ function TradingViewChart({ symbol, marketType }) {
 
     widgetRef.current = new window.TradingView.widget({
       autosize: true,
-      symbol: `CRYPTO:${symbol}USD`,
+      symbol: `${symbol}USDC`,
       interval: '15',
       timezone: 'Etc/UTC',
       theme: 'dark',
