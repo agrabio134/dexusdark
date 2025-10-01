@@ -109,7 +109,7 @@ function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, sele
       ) : (
         tokens.map((token) => (
           <option key={token.address} value={token.address}>
-            {token.symbol}/USDT
+            {token.symbol}/SOL
           </option>
         ))
       )}
@@ -117,11 +117,13 @@ function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, sele
   );
 }
 
-function TradingViewChart({ symbol, marketType }) {
+function TradingViewChart({ symbol, marketType, isUSDARK }) {
   const containerRef = useRef(null);
   const widgetRef = useRef(null);
 
   useEffect(() => {
+    if (isUSDARK) return;
+
     if (!window.TradingView || !containerRef.current) return;
 
     if (widgetRef.current) {
@@ -159,7 +161,35 @@ function TradingViewChart({ symbol, marketType }) {
         } catch (e) {}
       }
     };
-  }, [symbol, marketType]);
+  }, [symbol, marketType, isUSDARK]);
+
+  if (isUSDARK) {
+    return (
+      <div
+        style={{ width: '100%', height: '100%', minHeight: '300px' }}
+      >
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            paddingBottom: '125%',
+          }}
+        >
+          <iframe
+            src="https://dexscreener.com/solana/Fp8PHJZnqgSjSDk1H5HASAaozZVJqExTerLu7L9C6ZYq?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              border: 0,
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -538,6 +568,20 @@ function App() {
         const pairs = ['SOL/USDC', 'BTC/USDC', 'ETH/USDC', 'BONK/USDC', 'JUP/USDC', 'PYTH/USDC', 'WIF/USDC', 'JTO/USDC', 'RNDR/USDC', 'ONDO/USDC'];
         const allTokens = [];
 
+        // Fetch specific token first
+        try {
+          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark`);
+          const data = await response.json();
+          if (data.pairs) {
+            const filtered = data.pairs
+              .filter((p) => p.chainId === 'solana' && p.priceUsd && parseFloat(p.volume?.h24 || 0) > 0)
+              .slice(0, 1);
+            allTokens.push(...filtered);
+          }
+        } catch (e) {
+          console.error('Error fetching USDARK:', e);
+        }
+
         for (const pair of pairs) {
           try {
             const response = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${pair}`);
@@ -566,9 +610,18 @@ function App() {
               },
             ])
           ).values()
-        ).filter((t) => t.address !== SOL_MINT && t.volume24h > 100000);
+        ).filter((t) => t.address !== SOL_MINT && (t.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark' || t.volume24h > 10000));
 
-        const enrichedTokens = uniqueTokens
+        let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
+
+        // Move USDARK to the front
+        const darkIndex = sortedTokens.findIndex(t => t.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark');
+        if (darkIndex !== -1) {
+          const darkToken = sortedTokens.splice(darkIndex, 1)[0];
+          sortedTokens.unshift(darkToken);
+        }
+
+        const enrichedTokens = sortedTokens
           .map((token) => {
             const meta = tokenMeta.find((m) => m.address === token.address);
             return {
@@ -576,8 +629,7 @@ function App() {
               decimals: meta ? meta.decimals : 9,
               logoURI: meta ? meta.logoURI : null,
             };
-          })
-          .sort((a, b) => b.volume24h - a.volume24h);
+          });
 
         setTokens(enrichedTokens);
         if (!selectedToken && enrichedTokens.length > 0) setSelectedToken(enrichedTokens[0]);
@@ -794,7 +846,7 @@ function App() {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
-                          {selectedToken.symbol}/USDT
+                          {selectedToken.symbol}/SOL
                         </h2>
                         <div>
                           <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
@@ -823,7 +875,11 @@ function App() {
                       </div>
                     </div>
                     <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <TradingViewChart symbol={selectedToken?.symbol} marketType={viewMode} />
+                      <TradingViewChart 
+                        symbol={selectedToken?.symbol} 
+                        marketType={viewMode} 
+                        isUSDARK={selectedToken?.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark'}
+                      />
                     </div>
                   </>
                 )}
