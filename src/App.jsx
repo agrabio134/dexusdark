@@ -109,7 +109,7 @@ function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, sele
       ) : (
         tokens.map((token) => (
           <option key={token.address} value={token.address}>
-            {token.symbol}/USDC
+            {token.symbol}/USDT
           </option>
         ))
       )}
@@ -135,7 +135,7 @@ function TradingViewChart({ symbol, marketType }) {
 
     widgetRef.current = new window.TradingView.widget({
       autosize: true,
-      symbol: `${symbol}USDC`,
+      symbol: `${symbol}USDT`,
       interval: '15',
       timezone: 'Etc/UTC',
       theme: 'dark',
