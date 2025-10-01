@@ -647,7 +647,7 @@ function App() {
                   </button>
                   <button
                     onClick={() => {
-                      window.location.href = `http://usdark.trade/perp/${selectedPerpSymbol}/`;
+                      window.location.href = `https://usdark.trade/perp/${selectedPerpSymbol}/`;
                     }}
                     className="nav-btn"
                     style={{
