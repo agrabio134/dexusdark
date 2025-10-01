@@ -628,7 +628,7 @@ function App() {
               className="nav-bar"
             >
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>DEX</h1>
+                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setViewMode('spot')}
