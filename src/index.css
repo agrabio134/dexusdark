@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+    font-family: 'Orbitron', monospace !important;
+
 }
 
 span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
@@ -11,7 +13,7 @@ span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
 body {
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
   color: #000000;
-  font-family: 'Orbitron', monospace;
+  font-family: 'Orbitron', monospace !important;
   min-height: 100vh;
   overflow-x: hidden;
 }

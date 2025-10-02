@@ -3,12 +3,12 @@ import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@s
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
-const JUPITER_TOKEN_LIST = 'https://token.jup.ag/strict';
+const JUPITER_TOKEN_LIST = 'https://lite-api.jup.ag/tokens/v2/tag?query=verified';
 const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
 
 class ErrorBoundary extends Component {
@@ -177,19 +177,14 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const wallet = useWallet();
   const { connection } = useConnection();
   const [side, setSide] = useState('buy');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showTokenList, setShowTokenList] = useState(false);
+  const [inputAmount, setInputAmount] = useState('');
+  const [outputAmount, setOutputAmount] = useState('');
+  const [slippage, setSlippage] = useState(0.5);
   const [balance, setBalance] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
-  const [outputToken, setOutputToken] = useState(null);
-  const [jupiterLoaded, setJupiterLoaded] = useState(false);
-
-  useEffect(() => {
-    if (selectedToken) {
-      setOutputToken(selectedToken);
-      setShowTokenList(false);
-    }
-  }, [selectedToken]);
+  const [isFetchingQuote, setIsFetchingQuote] = useState(false);
+  const [error, setError] = useState('');
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const fetchBalances = async () => {
@@ -201,9 +196,9 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
           console.error('SOL Balance fetch error:', e);
           setBalance(0);
         }
-        if (outputToken) {
+        if (selectedToken) {
           try {
-            const mint = new PublicKey(outputToken.address);
+            const mint = new PublicKey(selectedToken.address);
             const ata = getAssociatedTokenAddressSync(mint, wallet.publicKey);
             const tokenBal = await connection.getTokenAccountBalance(ata);
             setTokenBalance(tokenBal.value.uiAmount || 0);
@@ -215,129 +210,155 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       }
     };
     fetchBalances();
-    const interval = setInterval(fetchBalances, 10000);
+    const interval = setInterval(fetchBalances, 30000);
     return () => clearInterval(interval);
-  }, [wallet.connected, connection, wallet.publicKey, outputToken]);
+  }, [wallet.connected, connection, wallet.publicKey, selectedToken]);
 
-  useEffect(() => {
-    const loadJupiterScript = () => {
-      if (!document.getElementById('jupiter-plugin-script')) {
-        const script = document.createElement('script');
-        script.id = 'jupiter-plugin-script';
-        script.src = 'https://plugin.jup.ag/plugin-v1.js';
-        script.async = true;
-        document.head.appendChild(script);
-        script.onload = () => {
-          setJupiterLoaded(true);
-        };
-      } else {
-        setJupiterLoaded(true);
-      }
-    };
-    loadJupiterScript();
-  }, []);
-
-  useEffect(() => {
-    if (jupiterLoaded && window.Jupiter && outputToken) {
-      const initialInputMint = side === 'buy' ? SOL_MINT : outputToken.address;
-      const initialOutputMint = side === 'buy' ? outputToken.address : SOL_MINT;
-      window.Jupiter.init({
-        displayMode: "integrated",
-        integratedTargetId: "jupiter-terminal",
-        endpoint: connection.rpcEndpoint,
-        formProps: {
-          initialInputMint,
-          initialOutputMint,
-          fixedInputMint: true,
-          fixedOutputMint: true,
-        },
-        branding: {
-          name: "USDARK-DEX",
-          logoUri: "https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto",
-          showJupiterBranding: false,
-        },
+  const getQuoteInternal = async (amount) => {
+    if (!amount || !wallet.publicKey || !selectedToken) return;
+    setError('');
+    try {
+      const inputMint = side === 'buy' ? new PublicKey(SOL_MINT) : new PublicKey(selectedToken.address);
+      const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
+      const inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
+      const outputDecimals = side === 'buy' ? selectedToken.decimals || 9 : 9;
+      const amountInLamports = Math.floor(parseFloat(amount) * (10 ** inputDecimals));
+      if (amountInLamports <= 0) throw new Error('Invalid amount');
+      const params = new URLSearchParams({
+        inputMint: inputMint.toString(),
+        outputMint: outputMint.toString(),
+        amount: amountInLamports.toString(),
+        slippageBps: Math.floor(slippage * 100).toString(),
       });
+      const quoteRes = await fetch(`https://lite-api.jup.ag/swap/v1/quote?${params}`);
+      if (!quoteRes.ok) {
+        const errorText = await quoteRes.text();
+        throw new Error(`Failed to get quote: ${quoteRes.status} - ${errorText}`);
+      }
+      const quote = await quoteRes.json();
+      const outAmount = parseFloat(quote.outAmount) / (10 ** outputDecimals);
+      setOutputAmount(outAmount.toFixed(6));
+      return quote;
+    } catch (e) {
+      console.error('Quote error:', e);
+      setError(e.message);
+      setOutputAmount('');
     }
-  }, [jupiterLoaded, side, outputToken, connection.rpcEndpoint]);
+  };
 
   useEffect(() => {
-    if (window.Jupiter && wallet) {
-      window.Jupiter.syncProps({ passthroughWallet: wallet });
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
-  }, [wallet]);
-
-  // Remove "Powered by Jupiter" after load
-  useEffect(() => {
-    if (!jupiterLoaded) return;
-
-    const removeBranding = () => {
-      const terminal = document.getElementById('jupiter-terminal');
-      if (!terminal) return;
-
-      // Access shadow DOM if present
-      let shadowRoot = terminal.shadowRoot;
-      if (!shadowRoot) {
-        // Traverse to find the shadow root
-        const portal = terminal.querySelector('#portal-container');
-        if (portal) shadowRoot = portal.shadowRoot || portal.querySelector('template[shadowrootmode="open"]')?.shadowRoot;
-      }
-
-      let targetElement = null;
-      if (shadowRoot) {
-        targetElement = shadowRoot.querySelector('span.justify-center');
-      } else {
-        targetElement = terminal.querySelector('span.justify-center');
-      }
-
-      if (targetElement) {
-        targetElement.style.display = 'none';
-        return true;
-      }
-      return false;
-    };
-
-    // Poll until the element is found and hidden
-    const interval = setInterval(() => {
-      if (removeBranding()) {
-        clearInterval(interval);
-      }
+    if (!selectedToken || !inputAmount) {
+      setOutputAmount('');
+      setIsFetchingQuote(false);
+      return;
+    }
+    timeoutRef.current = setTimeout(async () => {
+      setIsFetchingQuote(true);
+      await getQuoteInternal(inputAmount);
+      setIsFetchingQuote(false);
     }, 500);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [inputAmount, side, selectedToken, slippage]);
 
-    // Also try once after a delay
-    setTimeout(removeBranding, 1000);
-
-    return () => clearInterval(interval);
-  }, [jupiterLoaded]);
-
-  const filteredTokens = allTokens.filter(
-    (token) =>
-      token.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const executeSwap = async () => {
+    if (!wallet.connected || !inputAmount || !wallet.publicKey || !selectedToken) return;
+    setError('');
+    try {
+      const inputMint = side === 'buy' ? new PublicKey(SOL_MINT) : new PublicKey(selectedToken.address);
+      const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
+      const inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
+      const amountInLamports = Math.floor(parseFloat(inputAmount) * (10 ** inputDecimals));
+      if (amountInLamports <= 0) throw new Error('Invalid amount');
+      const params = new URLSearchParams({
+        inputMint: inputMint.toString(),
+        outputMint: outputMint.toString(),
+        amount: amountInLamports.toString(),
+        slippageBps: Math.floor(slippage * 100).toString(),
+      });
+      const quoteRes = await fetch(`https://lite-api.jup.ag/swap/v1/quote?${params}`);
+      if (!quoteRes.ok) {
+        const errorText = await quoteRes.text();
+        throw new Error(`Failed to get quote: ${quoteRes.status} - ${errorText}`);
+      }
+      const quote = await quoteRes.json();
+      const swapRes = await fetch('https://lite-api.jup.ag/swap/v1/swap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quoteResponse: quote,
+          userPublicKey: wallet.publicKey.toString(),
+          wrapAndUnwrapSol: true,
+          dynamicComputeUnitLimit: true,
+          prioritizationFeeLamports: 'auto',
+        }),
+      });
+      if (!swapRes.ok) {
+        const errorText = await swapRes.text();
+        throw new Error(`Failed to get swap transaction: ${swapRes.status} - ${errorText}`);
+      }
+      const { swapTransaction } = await swapRes.json();
+      const swapTransactionBuf = Uint8Array.from(atob(swapTransaction), (c) => c.charCodeAt(0));
+      const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+      const signedTx = await wallet.signTransaction(transaction);
+      const txid = await connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      });
+      await connection.confirmTransaction(txid, 'confirmed');
+      setInputAmount('');
+      // Refetch balances
+      const fetchBalances = async () => {
+        if (wallet.connected && wallet.publicKey) {
+          try {
+            const solBalance = (await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL;
+            setBalance(solBalance);
+          } catch (e) {
+            console.error('SOL Balance fetch error:', e);
+            setBalance(0);
+          }
+          if (selectedToken) {
+            try {
+              const mint = new PublicKey(selectedToken.address);
+              const ata = getAssociatedTokenAddressSync(mint, wallet.publicKey);
+              const tokenBal = await connection.getTokenAccountBalance(ata);
+              setTokenBalance(tokenBal.value.uiAmount || 0);
+            } catch (e) {
+              console.error('Token Balance fetch error:', e);
+              setTokenBalance(0);
+            }
+          }
+        }
+      };
+      fetchBalances();
+      alert(`Swap successful! Tx: ${txid}`);
+    } catch (e) {
+      console.error('Swap error:', e);
+      setError(e.message);
+    }
+  };
 
   if (!selectedToken) {
     return <div style={{ padding: '1rem', textAlign: 'center', color: '#999' }}>Select a token to trade</div>;
   }
 
+  const inputBalance = side === 'buy' ? balance : tokenBalance;
+  const maxInput = inputBalance * 0.99;
+  const handleMax = () => setInputAmount(maxInput.toFixed(6));
+
+  const swapButtonColor = side === 'buy' ? '#52c41a' : '#ff4d4f';
+
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
-      <style>{`
-        .jupiter-terminal [class*="powered-by"],
-        .jupiter-terminal [class*="PoweredBy"],
-        .jupiter-terminal a[href*="jup.ag"] {
-          display: none !important;
-        }
-        span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center {
-          display: none !important;
-        }
-        #jupiter-overlay {
-          z-index: 999 !important;
-        }
-      `}</style>
-
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
         <button
-          onClick={() => setSide('buy')}
+          onClick={() => { setSide('buy'); setInputAmount(''); }}
           style={{
             padding: '0.4rem',
             border: 'none',
@@ -352,7 +373,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
           Buy
         </button>
         <button
-          onClick={() => setSide('sell')}
+          onClick={() => { setSide('sell'); setInputAmount(''); }}
           style={{
             padding: '0.4rem',
             border: 'none',
@@ -368,17 +389,95 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         </button>
       </div>
 
-      <div style={{ position: 'relative', width: '100%', height: '600px' }}>
-        <div id="jupiter-terminal" style={{ width: '100%', height: '100%' }}></div>
-        <div id="jupiter-overlay" style={{
-          position: 'absolute',
-          bottom: 30,
-          left: 0,
-          width: '100%',
-          height: '70px',
-          background: 'black',
-        }}></div>
+      <div style={{ marginBottom: '0.5rem' }}>
+        <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>
+          {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
+        </label>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="number"
+            value={inputAmount}
+            onChange={(e) => setInputAmount(e.target.value)}
+            placeholder="0.0"
+            style={{
+              flex: 1,
+              padding: '0.4rem',
+              background: '#2a2a2a',
+              border: '1px solid #333',
+              borderRadius: '4px 0 0 4px',
+              color: '#fff',
+              fontSize: '0.875rem',
+            }}
+          />
+          <button
+            onClick={handleMax}
+            style={{
+              padding: '0.4rem 0.8rem',
+              background: '#333',
+              border: '1px solid #333',
+              color: '#fff',
+              borderLeft: 'none',
+              borderRadius: '0 4px 4px 0',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+            }}
+          >
+            Max
+          </button>
+        </div>
+        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+          Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
+        </div>
       </div>
+
+      <div style={{ marginBottom: '0.5rem' }}>
+        <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>Slippage %</label>
+        <input
+          type="number"
+          value={slippage}
+          onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
+          step="0.1"
+          min="0"
+          style={{
+            width: '100%',
+            padding: '0.4rem',
+            background: '#2a2a2a',
+            border: '1px solid #333',
+            borderRadius: '4px',
+            color: '#fff',
+            fontSize: '0.875rem',
+          }}
+        />
+      </div>
+
+      {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>Loading quote...</div>}
+      {outputAmount && (
+        <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#2a2a2a', borderRadius: '4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+            <span>Output:</span>
+            <span>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
+          </div>
+        </div>
+      )}
+      {error && <div style={{ color: '#ff4d4f', fontSize: '0.75rem', marginBottom: '0.5rem' }}>{error}</div>}
+      <button
+        onClick={executeSwap}
+        disabled={!inputAmount || isFetchingQuote || parseFloat(inputAmount) > inputBalance || !wallet.connected}
+        style={{
+          width: '100%',
+          padding: '0.6rem',
+          background: swapButtonColor,
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          fontWeight: 'bold',
+          cursor: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 'not-allowed' : 'pointer',
+          opacity: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 0.5 : 1,
+          fontSize: '0.875rem',
+        }}
+      >
+        {side === 'buy' ? 'Buy' : 'Sell'} {selectedToken.symbol}
+      </button>
     </div>
   );
 }
@@ -393,7 +492,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
 
   const network = WalletAdapterNetwork.Mainnet;
-  const endpoint = useMemo(() => 'https://rpc.ankr.com/solana', []);
+  const endpoint = useMemo(() => 'https://solana-rpc.publicnode.com', []);
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   useEffect(() => {
@@ -421,7 +520,7 @@ function App() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setTokenMeta(data.tokens || data);
+        setTokenMeta(data);
       } catch (e) {
         console.error('Error loading token list:', e);
         setTokenMeta([]);
