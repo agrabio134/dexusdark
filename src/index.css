@@ -124,7 +124,9 @@ input {
 .blur .main-container {
   filter: blur(5px);
 }
-.portal_container .text-primary-text\/50{
+.jupiter-terminal [class*="powered-by"],
+.jupiter-terminal [class*="PoweredBy"],
+.jupiter-terminal a[href*="jup.ag"],  .custom-fcnbia {
   display: none !important;
 }
 

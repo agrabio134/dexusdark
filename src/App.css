@@ -17,6 +17,9 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+.portal_container.text-primary-text\/50{
+  display: none !important;
+}
 
 @keyframes logo-spin {
   from {

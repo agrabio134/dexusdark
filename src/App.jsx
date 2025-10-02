@@ -4,7 +4,6 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
-import axios from 'axios';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
@@ -58,86 +57,35 @@ function WalletIconButton() {
   );
 }
 
-function TradingViewChart({ symbol, isUSDARK, isMobile }) {
-  const containerRef = useRef(null);
-  const widgetRef = useRef(null);
-
-  useEffect(() => {
-    if (isUSDARK) return;
-
-    if (!window.TradingView || !containerRef.current) return;
-
-    if (widgetRef.current) {
-      try {
-        widgetRef.current.remove();
-      } catch (e) {}
-    }
-
-    const container = containerRef.current;
-    container.innerHTML = '';
-
-    widgetRef.current = new window.TradingView.widget({
-      autosize: true,
-      symbol: `${symbol}USDT`,
-      interval: '15',
-      timezone: 'Etc/UTC',
-      theme: 'dark',
-      style: '1',
-      locale: 'en',
-      toolbar_bg: '#131722',
-      enable_publishing: false,
-      backgroundColor: '#131722',
-      container_id: container.id,
-      studies: ['Volume@tv-basicstudies'],
-      disabled_features: ['header_widget'],
-      withdateranges: true,
-      hide_side_toolbar: false,
-      allow_symbol_change: false,
-    });
-
-    return () => {
-      if (widgetRef.current) {
-        try {
-          widgetRef.current.remove();
-        } catch (e) {}
-      }
-    };
-  }, [symbol, isUSDARK]);
-
-  if (isUSDARK) {
-    return (
-      <div
-        style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px' }}
-      >
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            paddingBottom: '100%',
-          }}
-        >
-          <iframe
-            src="https://dexscreener.com/solana/Fp8PHJZnqgSjSDk1H5HASAaozZVJqExTerLu7L9C6ZYq?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              top: 0,
-              left: 0,
-              border: 0,
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
+function TradingViewChart({ symbol, tokenAddress, isMobile }) {
   return (
-    <div
-      ref={containerRef}
-      id={`tradingview_chart_${symbol}`}
-      style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px', background: '#131722' }}
-    />
+    <div style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px' }}>
+      <style>{`
+        #dexscreener-embed-${tokenAddress} {
+          position: relative;
+          width: 100%;
+          padding-bottom: 125%;
+        }
+        @media(min-width:1400px) {
+          #dexscreener-embed-${tokenAddress} {
+            padding-bottom: 65%;
+          }
+        }
+        #dexscreener-embed-${tokenAddress} iframe {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          border: 0;
+        }
+      `}</style>
+      <div id={`dexscreener-embed-${tokenAddress}`}>
+        <iframe 
+          src={`https://dexscreener.com/solana/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=1&chartType=usd&interval=15`}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -221,8 +169,8 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         },
         branding: {
           name: "USDARK-DEX",
-          logoUri:
-            "https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto",
+          logoUri: "https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto",
+          showJupiterBranding: false,
         },
       });
     }
@@ -246,6 +194,13 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
+      <style>{`
+        .jupiter-terminal [class*="powered-by"],
+        .jupiter-terminal [class*="PoweredBy"],
+        .jupiter-terminal a[href*="jup.ag"] {
+          display: none !important;
+        }
+      `}</style>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
         <button
@@ -281,98 +236,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       </div>
 
       <div id="jupiter-terminal" style={{ width: '100%', height: '600px' }}></div>
-
-      {/* <div style={{ marginTop: '0.5rem' }}>
-        <div
-          onClick={() => setShowTokenList(!showTokenList)}
-          style={{
-            padding: '0.4rem',
-            background: '#2a2a2a',
-            border: '1px solid #333',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          {outputToken ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              {outputToken.logoURI && (
-                <img src={outputToken.logoURI} alt={outputToken.symbol} style={{ width: '16px', height: '16px', borderRadius: '50%' }} />
-              )}
-              <div>
-                <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.75rem' }}>{outputToken.symbol}</div>
-                <div style={{ fontSize: '0.625rem', color: '#666' }}>{outputToken.name}</div>
-              </div>
-            </div>
-          ) : (
-            <div style={{ color: '#666', fontSize: '0.75rem' }}>Select token</div>
-          )}
-          <div style={{ fontSize: '0.625rem' }}>▼</div>
-        </div>
-
-        {showTokenList && (
-          <div
-            style={{
-              marginTop: '0.4rem',
-              border: '1px solid #333',
-              borderRadius: '4px',
-              background: '#2a2a2a',
-              maxHeight: '150px',
-              overflowY: 'auto',
-            }}
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              style={{
-                width: '100%',
-                padding: '0.4rem',
-                border: 'none',
-                borderBottom: '1px solid #333',
-                background: '#2a2a2a',
-                color: '#fff',
-                fontSize: '0.625rem',
-              }}
-            />
-            {filteredTokens.slice(0, 30).map((token) => (
-              <div
-                key={token.address}
-                onClick={() => {
-                  setOutputToken(token);
-                  setSelectedToken(token);
-                  setShowTokenList(false);
-                  setSearchQuery('');
-                }}
-                style={{
-                  padding: '0.4rem',
-                  cursor: 'pointer',
-                  borderBottom: '1px solid #333',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  {token.logoURI && (
-                    <img src={token.logoURI} alt={token.symbol} style={{ width: '16px', height: '16px', borderRadius: '50%' }} />
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.75rem' }}>{token.symbol}</div>
-                    <div style={{ fontSize: '0.625rem', color: '#666' }}>{token.name}</div>
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.625rem', color: '#fff' }}>${token.price.toFixed(4)}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div> */}
     </div>
   );
 }
@@ -386,7 +249,7 @@ function App() {
 
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => 'https://rpc.ankr.com/solana', []);
-  const wallets = useMemo(() => [], []); // Removed adapters as they are standard
+  const wallets = useMemo(() => [], []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -429,7 +292,6 @@ function App() {
         const pairs = ['SOL/USDC', 'BTC/USDC', 'ETH/USDC', 'BONK/USDC', 'JUP/USDC', 'PYTH/USDC', 'WIF/USDC', 'JTO/USDC', 'RNDR/USDC', 'ONDO/USDC'];
         const allTokens = [];
 
-        // Fetch specific token first
         try {
           const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${USDARK_CA}`);
           const data = await response.json();
@@ -475,22 +337,20 @@ function App() {
 
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
 
-        // Move USDARK to the front
         const darkIndex = sortedTokens.findIndex(t => t.address === USDARK_CA);
         if (darkIndex !== -1) {
           const darkToken = sortedTokens.splice(darkIndex, 1)[0];
           sortedTokens.unshift(darkToken);
         }
 
-        const enrichedTokens = sortedTokens
-          .map((token) => {
-            const meta = tokenMeta.find((m) => m.address === token.address);
-            return {
-              ...token,
-              decimals: meta ? meta.decimals : 9,
-              logoURI: meta ? meta.logoURI : null,
-            };
-          });
+        const enrichedTokens = sortedTokens.map((token) => {
+          const meta = tokenMeta.find((m) => m.address === token.address);
+          return {
+            ...token,
+            decimals: meta ? meta.decimals : 9,
+            logoURI: meta ? meta.logoURI : null,
+          };
+        });
 
         setTokens(enrichedTokens);
         if (!selectedToken && enrichedTokens.length > 0) setSelectedToken(enrichedTokens[0]);
@@ -732,8 +592,8 @@ function App() {
                       </div>
                       <div style={chartContainerStyle}>
                         <TradingViewChart 
-                          symbol={selectedToken?.symbol} 
-                          isUSDARK={selectedToken?.address === USDARK_CA}
+                          symbol={selectedToken?.symbol}
+                          tokenAddress={selectedToken?.address}
                           isMobile={isMobile}
                         />
                       </div>
