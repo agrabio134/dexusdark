@@ -26,7 +26,8 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.9.3",
     "stream-browserify": "^3.0.0",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "vite-plugin-node-polyfills": "^0.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
