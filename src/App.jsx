@@ -115,7 +115,7 @@ function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, sele
   );
 }
 
-function TradingViewChart({ tokenAddress }) {
+function TradingViewChart({ tokenAddress, isMobile }) {
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <style>{`
@@ -123,7 +123,13 @@ function TradingViewChart({ tokenAddress }) {
           position: relative;
           width: 100%;
           height: 100%;
-          padding-bottom: 0;
+          padding-bottom: ${isMobile ? '125%' : '0'};
+        }
+        @media(min-width:768px) {
+          #dexscreener-embed-${tokenAddress} {
+            padding-bottom: 0;
+            height: 100%;
+          }
         }
         #dexscreener-embed-${tokenAddress} iframe {
           position: absolute;
@@ -384,10 +390,28 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('spot');
   const [tokenMeta, setTokenMeta] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => 'https://rpc.ankr.com/solana', []);
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const copyCA = () => {
+    navigator.clipboard.writeText(USDARK_CA).then(() => {
+      alert('CA copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy CA:', err);
+    });
+  };
 
   useEffect(() => {
     const loadTokenMeta = async () => {
@@ -494,6 +518,49 @@ function App() {
     return `$${(num / 1e3).toFixed(2)}K`;
   };
 
+  const mainContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '250px 1fr 350px',
+    gridTemplateAreas: isMobile ? '"sidebar" "main" "trade"' : '"sidebar main trade"',
+    height: isMobile ? 'auto' : 'calc(100vh - 100px)',
+    minHeight: isMobile ? 'auto' : 'calc(100vh - 100px)',
+    gap: isMobile ? '0' : '0',
+  };
+
+  const mainContentStyle = {
+    gridArea: 'main',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: isMobile ? 'visible' : 'hidden',
+    height: isMobile ? 'auto' : '100%',
+    width: '100%',
+  };
+
+  const chartContainerStyle = {
+    flex: isMobile ? 'none' : 1,
+    overflow: 'hidden',
+    height: isMobile ? '400px' : '100%',
+    width: '100%',
+  };
+
+  const sidebarStyle = {
+    gridArea: 'sidebar',
+    background: '#1a1a1a',
+    borderRight: isMobile ? 'none' : '1px solid #262626',
+    overflowY: 'auto',
+    padding: isMobile ? '0.5rem' : '1rem',
+    width: '100%',
+  };
+
+  const tradeStyle = {
+    gridArea: 'trade',
+    background: '#1a1a1a',
+    borderLeft: isMobile ? 'none' : '1px solid #262626',
+    padding: isMobile ? '0.5rem' : '0.75rem',
+    overflowY: isMobile ? 'visible' : 'auto',
+    width: '100%',
+  };
+
   return (
     <ErrorBoundary>
       <ConnectionProvider endpoint={endpoint}>
@@ -509,6 +576,29 @@ function App() {
             >
               <div
                 style={{
+                  background: '#1a1a1a',
+                  padding: '0.5rem 1rem',
+                  textAlign: 'center',
+                  borderBottom: '1px solid #262626',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1000,
+                }}
+              >
+                <div 
+                  onClick={copyCA}
+                  style={{ 
+                    fontSize: isMobile ? '0.7rem' : '0.875rem', 
+                    color: '#999',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  CA: {USDARK_CA}
+                </div>
+              </div>
+              <div
+                style={{
                   borderBottom: '1px solid #262626',
                   padding: '0.75rem 1rem',
                   display: 'flex',
@@ -517,13 +607,13 @@ function App() {
                   background: '#1a1a1a',
                   flexWrap: 'wrap',
                   position: 'sticky',
-                  top: 0,
+                  top: '40px',
                   zIndex: 900,
                 }}
                 className="nav-bar"
               >
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
+                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => setViewMode('spot')}
@@ -565,25 +655,8 @@ function App() {
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '250px 1fr 350px',
-                  gridTemplateAreas: '"sidebar main trade"',
-                  height: 'calc(100vh - 60px)',
-                }}
-                className="main-container"
-              >
-                <div
-                  className="markets-sidebar"
-                  style={{
-                    gridArea: 'sidebar',
-                    background: '#1a1a1a',
-                    borderRight: '1px solid #262626',
-                    overflowY: 'auto',
-                    padding: '1rem',
-                  }}
-                >
+              <div style={mainContainerStyle} className="main-container">
+                <div style={sidebarStyle} className="markets-sidebar">
                   <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#999' }}>Markets</h3>
                   {loading ? (
                     <div style={{ color: '#999', fontSize: '0.75rem' }}>Loading...</div>
@@ -663,16 +736,8 @@ function App() {
                   )}
                 </div>
 
-                <div
-                  className="main-content"
-                  style={{
-                    gridArea: 'main',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div style={{ padding: '0.75rem' }}>
+                <div style={mainContentStyle} className="main-content">
+                  <div style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
                     <TokenSelector
                       viewMode={viewMode}
                       tokens={tokens}
@@ -687,7 +752,7 @@ function App() {
                     <>
                       <div
                         className="info-box"
-                        style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
+                        style={{ padding: isMobile ? '0.5rem' : '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
@@ -719,25 +784,17 @@ function App() {
                           </div>
                         </div>
                       </div>
-                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <div style={chartContainerStyle}>
                         <TradingViewChart 
                           tokenAddress={selectedToken?.address}
+                          isMobile={isMobile}
                         />
                       </div>
                     </>
                   )}
                 </div>
 
-                <div
-                  className="trading-panel"
-                  style={{
-                    gridArea: 'trade',
-                    background: '#1a1a1a',
-                    borderLeft: '1px solid #262626',
-                    padding: '0.75rem',
-                    overflowY: 'auto',
-                  }}
-                >
+                <div style={tradeStyle} className="trading-panel">
                   <SpotInterface selectedToken={selectedToken} allTokens={tokens} setSelectedToken={setSelectedToken} />
                 </div>
               </div>
