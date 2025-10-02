@@ -8,12 +8,12 @@ import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
+const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 const JUPITER_TOKEN_LIST = 'https://lite-api.jup.ag/tokens/v2/tag?query=verified';
 const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
 const JUP_MINT = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
 const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
-const PUMP_MINT = '6qdnvw4yX6E4S1q8sW8q9Qv7uX6qXqXqXqXqXqXqXqX'; // Placeholder, replace with actual PUMP mint if different
-const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -177,7 +177,7 @@ function TradingViewChart({ tokenAddress, isMobile }) {
   );
 }
 
-function StyledModal({ isOpen, onClose, title, message, type = 'success' }) {
+function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }) {
   if (!isOpen) return null;
 
   const modalStyle = {
@@ -209,16 +209,38 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success' }) {
     marginBottom: '1rem',
   };
 
+  const viewTxButton = (txid) => {
+    if (txid) {
+      window.open(`https://solscan.io/tx/${txid}`, '_blank');
+    }
+  };
+
   return (
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={iconStyle}>{type === 'success' ? '✅' : '❌'}</div>
         <h3 style={{ margin: '0 0 1rem 0', color: type === 'success' ? '#52c41a' : '#ff4d4f' }}>{title}</h3>
-        <p style={{ margin: 0 }}>{message}</p>
+        <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{message}</p>
+        {type === 'success' && txid && (
+          <button
+            onClick={() => viewTxButton(txid)}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              background: '#52c41a',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              marginBottom: '1rem',
+            }}
+          >
+            View on Solscan
+          </button>
+        )}
         <button
           onClick={onClose}
           style={{
-            marginTop: '1rem',
             padding: '0.5rem 1rem',
             background: type === 'success' ? '#52c41a' : '#ff4d4f',
             color: 'white',
@@ -248,6 +270,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [successTxid, setSuccessTxid] = useState('');
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -410,13 +433,12 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         }
       };
       fetchBalances();
-      const successMsg = `✅ Swap successful! Transaction ID: ${txid}\n\nYou can view it on Solana Explorer: https://solscan.io/tx/${txid}`;
-      setModalMessage(successMsg);
+      setSuccessTxid(txid);
+      setModalMessage('Your swap was successful!');
       setShowSuccess(true);
     } catch (e) {
       console.error('Swap error:', e);
-      const errorMsg = `❌ Swap failed: ${e.message}`;
-      setModalMessage(errorMsg);
+      setModalMessage(e.message);
       setShowError(true);
     }
   };
@@ -432,13 +454,14 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const swapButtonColor = side === 'buy' ? '#52c41a' : '#ff4d4f';
 
   return (
-    <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
+    <>
       <StyledModal
         isOpen={showSuccess}
         onClose={() => setShowSuccess(false)}
         title="Swap Successful!"
         message={modalMessage}
         type="success"
+        txid={successTxid}
       />
       <StyledModal
         isOpen={showError}
@@ -447,129 +470,131 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         message={modalMessage}
         type="error"
       />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
-        <button
-          onClick={() => { setSide('buy'); setInputAmount(''); }}
-          style={{
-            padding: '0.4rem',
-            border: 'none',
-            borderRadius: '4px',
-            background: side === 'buy' ? '#52c41a' : '#2a2a2a',
-            color: 'white',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
-        >
-          Buy
-        </button>
-        <button
-          onClick={() => { setSide('sell'); setInputAmount(''); }}
-          style={{
-            padding: '0.4rem',
-            border: 'none',
-            borderRadius: '4px',
-            background: side === 'sell' ? '#ff4d4f' : '#2a2a2a',
-            color: 'white',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
-        >
-          Sell
-        </button>
-      </div>
-
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>
-          {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
-        </label>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <input
-            type="number"
-            value={inputAmount}
-            onChange={(e) => setInputAmount(e.target.value)}
-            placeholder="0.0"
-            style={{
-              flex: 1,
-              padding: '0.4rem',
-              background: '#2a2a2a',
-              border: '1px solid #333',
-              borderRadius: '4px 0 0 4px',
-              color: '#fff',
-              fontSize: '0.875rem',
-            }}
-          />
+      <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
           <button
-            onClick={handleMax}
+            onClick={() => { setSide('buy'); setInputAmount(''); }}
             style={{
-              padding: '0.4rem 0.8rem',
-              background: '#333',
-              border: '1px solid #333',
-              color: '#fff',
-              borderLeft: 'none',
-              borderRadius: '0 4px 4px 0',
+              padding: '0.4rem',
+              border: 'none',
+              borderRadius: '4px',
+              background: side === 'buy' ? '#52c41a' : '#2a2a2a',
+              color: 'white',
+              fontWeight: 'bold',
               cursor: 'pointer',
               fontSize: '0.75rem',
             }}
           >
-            Max
+            Buy
+          </button>
+          <button
+            onClick={() => { setSide('sell'); setInputAmount(''); }}
+            style={{
+              padding: '0.4rem',
+              border: 'none',
+              borderRadius: '4px',
+              background: side === 'sell' ? '#ff4d4f' : '#2a2a2a',
+              color: 'white',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+            }}
+          >
+            Sell
           </button>
         </div>
-        <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
-          Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
-        </div>
-      </div>
 
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>Slippage %</label>
-        <input
-          type="number"
-          value={slippage}
-          onChange={(e) => setSlippage(Math.max(1, parseFloat(e.target.value) || 1))}
-          step="0.1"
-          min="1"
-          style={{
-            width: '100%',
-            padding: '0.4rem',
-            background: '#2a2a2a',
-            border: '1px solid #333',
-            borderRadius: '4px',
-            color: '#fff',
-            fontSize: '0.875rem',
-          }}
-        />
-      </div>
-
-      {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>Loading quote...</div>}
-      {outputAmount && (
-        <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#2a2a2a', borderRadius: '4px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-            <span>Output:</span>
-            <span>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>
+            {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <input
+              type="number"
+              value={inputAmount}
+              onChange={(e) => setInputAmount(e.target.value)}
+              placeholder="0.0"
+              style={{
+                flex: 1,
+                padding: '0.4rem',
+                background: '#2a2a2a',
+                border: '1px solid #333',
+                borderRadius: '4px 0 0 4px',
+                color: '#fff',
+                fontSize: '0.875rem',
+              }}
+            />
+            <button
+              onClick={handleMax}
+              style={{
+                padding: '0.4rem 0.8rem',
+                background: '#333',
+                border: '1px solid #333',
+                color: '#fff',
+                borderLeft: 'none',
+                borderRadius: '0 4px 4px 0',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+              }}
+            >
+              Max
+            </button>
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+            Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
           </div>
         </div>
-      )}
-      {error && <div style={{ color: '#ff4d4f', fontSize: '0.75rem', marginBottom: '0.5rem' }}>{error}</div>}
-      <button
-        onClick={executeSwap}
-        disabled={!inputAmount || isFetchingQuote || parseFloat(inputAmount) > inputBalance || !wallet.connected}
-        style={{
-          width: '100%',
-          padding: '0.6rem',
-          background: swapButtonColor,
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          fontWeight: 'bold',
-          cursor: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 'not-allowed' : 'pointer',
-          opacity: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 0.5 : 1,
-          fontSize: '0.875rem',
-        }}
-      >
-        {side === 'buy' ? 'Buy' : 'Sell'} {selectedToken.symbol}
-      </button>
-    </div>
+
+        <div style={{ marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>Slippage %</label>
+          <input
+            type="number"
+            value={slippage}
+            onChange={(e) => setSlippage(Math.max(1, parseFloat(e.target.value) || 1))}
+            step="0.1"
+            min="1"
+            style={{
+              width: '100%',
+              padding: '0.4rem',
+              background: '#2a2a2a',
+              border: '1px solid #333',
+              borderRadius: '4px',
+              color: '#fff',
+              fontSize: '0.875rem',
+            }}
+          />
+        </div>
+
+        {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>Loading quote...</div>}
+        {outputAmount && (
+          <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#2a2a2a', borderRadius: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+              <span>Output:</span>
+              <span>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
+            </div>
+          </div>
+        )}
+        {error && <div style={{ color: '#ff4d4f', fontSize: '0.75rem', marginBottom: '0.5rem' }}>{error}</div>}
+        <button
+          onClick={executeSwap}
+          disabled={!inputAmount || isFetchingQuote || parseFloat(inputAmount) > inputBalance || !wallet.connected}
+          style={{
+            width: '100%',
+            padding: '0.6rem',
+            background: swapButtonColor,
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            fontWeight: 'bold',
+            cursor: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 'not-allowed' : 'pointer',
+            opacity: (!inputAmount || parseFloat(inputAmount) > inputBalance || !wallet.connected) ? 0.5 : 1,
+            fontSize: '0.875rem',
+          }}
+        >
+          {side === 'buy' ? 'Buy' : 'Sell'} {selectedToken.symbol}
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -625,28 +650,31 @@ function App() {
       try {
         setLoading(true);
         const allTokens = [];
-        const tokenConfigs = [
-          { search: 'USDARK/SOL', mint: USDARK_CA },
-          { search: 'JUP/SOL', mint: JUP_MINT },
-          { search: 'JTO/SOL', mint: JTO_MINT },
-          { search: 'PUMP/SOL', mint: PUMP_MINT },
-          { search: 'USDC/SOL', mint: USDC_MINT },
-        ];
+        const mints = [USDARK_CA, JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT];
 
-        for (const config of tokenConfigs) {
+        for (const mint of mints) {
           try {
-            const response = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${config.search}`);
+            const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
             const data = await response.json();
-            if (data.pairs) {
-              const filtered = data.pairs
-                .filter((p) => p.chainId === 'solana' && p.baseToken.address === config.mint && p.priceUsd && parseFloat(p.volume?.h24 || 0) > 0)
-                .slice(0, 1)[0];
-              if (filtered) {
-                allTokens.push(filtered);
+            if (data.pairs && data.pairs.length > 0) {
+              // Filter to only pairs where this mint is the base token
+              const basePairs = data.pairs.filter(p => p.baseToken.address === mint);
+              if (basePairs.length > 0) {
+                // Prefer SOL or USDC quote pairs
+                const preferredPair = basePairs.find(p => 
+                  (p.quoteToken.address === SOL_MINT || p.quoteToken.address === USDC_MINT) && 
+                  p.chainId === 'solana' && 
+                  p.priceUsd && 
+                  parseFloat(p.volume?.h24 || 0) > 0
+                );
+                const pair = preferredPair || basePairs[0]; // Fallback to first base pair
+                if (pair) {
+                  allTokens.push(pair);
+                }
               }
             }
           } catch (e) {
-            console.error(`Error fetching ${config.search}:`, e);
+            console.error(`Error fetching token ${mint}:`, e);
           }
         }
 
@@ -658,7 +686,7 @@ function App() {
           priceChange24h: parseFloat(pair.priceChange?.h24) || 0,
           volume24h: parseFloat(pair.volume?.h24) || 0,
           liquidity: parseFloat(pair.liquidity?.usd) || 0,
-        }));
+        })).filter(t => t.address && t.price > 0);
 
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
 
