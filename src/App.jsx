@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, Component } from 'react';
 import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
@@ -57,19 +58,72 @@ function WalletIconButton() {
   );
 }
 
-function TradingViewChart({ symbol, tokenAddress, isMobile }) {
+function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, selectedPerpSymbol, setSelectedPerpSymbol }) {
   return (
-    <div style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px' }}>
+    <select
+      className="token-selector"
+      value={viewMode === 'perps' ? selectedPerpSymbol || '' : selectedToken?.address || ''}
+      onChange={(e) => {
+        if (viewMode === 'perps') {
+          setSelectedPerpSymbol(e.target.value);
+        } else {
+          const token = tokens.find((t) => t.address === e.target.value);
+          if (token) setSelectedToken(token);
+        }
+      }}
+      style={{
+        width: '100%',
+        padding: '0.4rem',
+        background: '#2a2a2a',
+        border: '1px solid #333',
+        borderRadius: '4px',
+        color: '#fff',
+        fontSize: '0.75rem',
+        appearance: 'none',
+        backgroundImage:
+          'url("data:image/svg+xml;utf8,<svg fill=\'white\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right 0.4rem center',
+        backgroundSize: '0.8rem',
+      }}
+    >
+      {viewMode === 'perps' ? (
+        [
+          'PERP_BTC_USDC',
+          'PERP_ETH_USDC',
+          'PERP_SOL_USDC',
+          'PERP_BNB_USDC',
+          'PERP_XRP_USDC',
+          'PERP_ADA_USDC',
+          'PERP_DOGE_USDC',
+          'PERP_SHIB_USDC',
+          'PERP_AVAX_USDC',
+          'PERP_TRX_USDC',
+        ].map((symbol) => (
+          <option key={symbol} value={symbol}>
+            {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
+          </option>
+        ))
+      ) : (
+        tokens.map((token) => (
+          <option key={token.address} value={token.address}>
+            {token.symbol}/SOL
+          </option>
+        ))
+      )}
+    </select>
+  );
+}
+
+function TradingViewChart({ tokenAddress }) {
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <style>{`
         #dexscreener-embed-${tokenAddress} {
           position: relative;
           width: 100%;
-          padding-bottom: 125%;
-        }
-        @media(min-width:1400px) {
-          #dexscreener-embed-${tokenAddress} {
-            padding-bottom: 65%;
-          }
+          height: 100%;
+          padding-bottom: 0;
         }
         #dexscreener-embed-${tokenAddress} iframe {
           position: absolute;
@@ -78,6 +132,30 @@ function TradingViewChart({ symbol, tokenAddress, isMobile }) {
           top: 0;
           left: 0;
           border: 0;
+        }
+        /* Overlay to hide DexScreener logo */
+        #dexscreener-embed-${tokenAddress}::after {
+          content: '';
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 120px;
+          height: 30px;
+          background: #131722;
+          z-index: 10;
+          pointer-events: none;
+        }
+        /* Hide bottom branding area */
+        #dexscreener-embed-${tokenAddress}::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 35px;
+          background: #131722;
+          z-index: 10;
+          pointer-events: none;
         }
       `}</style>
       <div id={`dexscreener-embed-${tokenAddress}`}>
@@ -182,6 +260,49 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
     }
   }, [wallet]);
 
+  // Remove "Powered by Jupiter" after load
+  useEffect(() => {
+    if (!jupiterLoaded) return;
+
+    const removeBranding = () => {
+      const terminal = document.getElementById('jupiter-terminal');
+      if (!terminal) return;
+
+      // Access shadow DOM if present
+      let shadowRoot = terminal.shadowRoot;
+      if (!shadowRoot) {
+        // Traverse to find the shadow root
+        const portal = terminal.querySelector('#portal-container');
+        if (portal) shadowRoot = portal.shadowRoot || portal.querySelector('template[shadowrootmode="open"]')?.shadowRoot;
+      }
+
+      let targetElement = null;
+      if (shadowRoot) {
+        targetElement = shadowRoot.querySelector('span.justify-center');
+      } else {
+        targetElement = terminal.querySelector('span.justify-center');
+      }
+
+      if (targetElement) {
+        targetElement.style.display = 'none';
+        return true;
+      }
+      return false;
+    };
+
+    // Poll until the element is found and hidden
+    const interval = setInterval(() => {
+      if (removeBranding()) {
+        clearInterval(interval);
+      }
+    }, 500);
+
+    // Also try once after a delay
+    setTimeout(removeBranding, 1000);
+
+    return () => clearInterval(interval);
+  }, [jupiterLoaded]);
+
   const filteredTokens = allTokens.filter(
     (token) =>
       token.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -199,6 +320,12 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         .jupiter-terminal [class*="PoweredBy"],
         .jupiter-terminal a[href*="jup.ag"] {
           display: none !important;
+        }
+        span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center {
+          display: none !important;
+        }
+        #jupiter-overlay {
+          z-index: 999 !important;
         }
       `}</style>
 
@@ -235,7 +362,17 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         </button>
       </div>
 
-      <div id="jupiter-terminal" style={{ width: '100%', height: '600px' }}></div>
+      <div style={{ position: 'relative', width: '100%', height: '600px' }}>
+        <div id="jupiter-terminal" style={{ width: '100%', height: '100%' }}></div>
+        <div id="jupiter-overlay" style={{
+          position: 'absolute',
+          bottom: 30,
+          left: 0,
+          width: '100%',
+          height: '70px',
+          background: 'black',
+        }}></div>
+      </div>
     </div>
   );
 }
@@ -243,30 +380,14 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 function App() {
   const [tokens, setTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(null);
+  const [selectedPerpSymbol, setSelectedPerpSymbol] = useState('PERP_ETH_USDC');
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('spot');
   const [tokenMeta, setTokenMeta] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
 
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => 'https://rpc.ankr.com/solana', []);
-  const wallets = useMemo(() => [], []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const copyCA = () => {
-    navigator.clipboard.writeText(USDARK_CA).then(() => {
-      alert('CA copied to clipboard!');
-    }).catch(err => {
-      console.error('Failed to copy CA:', err);
-    });
-  };
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
   useEffect(() => {
     const loadTokenMeta = async () => {
@@ -373,49 +494,6 @@ function App() {
     return `$${(num / 1e3).toFixed(2)}K`;
   };
 
-  const mainContainerStyle = {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : '250px 1fr 350px',
-    gridTemplateAreas: isMobile ? '"sidebar" "main" "trade"' : '"sidebar main trade"',
-    height: isMobile ? 'auto' : 'calc(100vh - 60px)',
-    minHeight: isMobile ? 'auto' : 'calc(100vh - 60px)',
-    gap: isMobile ? '0' : '0',
-  };
-
-  const mainContentStyle = {
-    gridArea: 'main',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: isMobile ? 'visible' : 'hidden',
-    height: isMobile ? 'auto' : '100%',
-    width: '100%',
-  };
-
-  const chartContainerStyle = {
-    flex: isMobile ? 'none' : 1,
-    overflow: 'hidden',
-    height: isMobile ? '400px' : '100%',
-    width: '100%',
-  };
-
-  const sidebarStyle = {
-    gridArea: 'sidebar',
-    background: '#1a1a1a',
-    borderRight: isMobile ? 'none' : '1px solid #262626',
-    overflowY: 'auto',
-    padding: isMobile ? '0.5rem' : '1rem',
-    width: '100%',
-  };
-
-  const tradeStyle = {
-    gridArea: 'trade',
-    background: '#1a1a1a',
-    borderLeft: isMobile ? 'none' : '1px solid #262626',
-    padding: isMobile ? '0.5rem' : '0.75rem',
-    overflowY: isMobile ? 'visible' : 'auto',
-    width: '100%',
-  };
-
   return (
     <ErrorBoundary>
       <ConnectionProvider endpoint={endpoint}>
@@ -424,35 +502,11 @@ function App() {
             <div
               style={{
                 minHeight: '100vh',
-                height: '100vh',
                 background: '#0d0d0d',
                 color: '#fff',
                 position: 'relative',
               }}
             >
-              <div
-                style={{
-                  background: '#1a1a1a',
-                  padding: '0.5rem 1rem',
-                  textAlign: 'center',
-                  borderBottom: '1px solid #262626',
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 1000,
-                }}
-              >
-                <div 
-                  onClick={copyCA}
-                  style={{ 
-                    fontSize: isMobile ? '0.7rem' : '0.875rem', 
-                    color: '#999',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                  }}
-                >
-                  CA: {USDARK_CA}
-                </div>
-              </div>
               <div
                 style={{
                   borderBottom: '1px solid #262626',
@@ -463,19 +517,20 @@ function App() {
                   background: '#1a1a1a',
                   flexWrap: 'wrap',
                   position: 'sticky',
-                  top: '40px',
+                  top: 0,
                   zIndex: 900,
                 }}
                 className="nav-bar"
               >
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
+                  <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
+                      onClick={() => setViewMode('spot')}
                       className="nav-btn"
                       style={{
                         padding: '0.4rem 0.8rem',
-                        background: '#333',
+                        background: viewMode === 'spot' ? '#333' : 'transparent',
                         border: 'none',
                         color: '#fff',
                         cursor: 'pointer',
@@ -486,10 +541,13 @@ function App() {
                       Spot
                     </button>
                     <button
-                      onClick={() => { window.location.href = 'https://usdark.trade/perp/PERP_ETH_USDC/'; }}
+                      onClick={() => {
+                        window.location.href = `https://usdark.trade/perp/${selectedPerpSymbol}/`;
+                      }}
+                      className="nav-btn"
                       style={{
                         padding: '0.4rem 0.8rem',
-                        background: 'transparent',
+                        background: viewMode === 'perps' ? '#333' : 'transparent',
                         border: 'none',
                         color: '#fff',
                         cursor: 'pointer',
@@ -503,14 +561,67 @@ function App() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <WalletMultiButton className="wallet-adapter-button-desktop" />
+                  <WalletIconButton />
                 </div>
               </div>
 
-              <div style={mainContainerStyle} className="main-container">
-                <div style={sidebarStyle} className="markets-sidebar">
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '250px 1fr 350px',
+                  gridTemplateAreas: '"sidebar main trade"',
+                  height: 'calc(100vh - 60px)',
+                }}
+                className="main-container"
+              >
+                <div
+                  className="markets-sidebar"
+                  style={{
+                    gridArea: 'sidebar',
+                    background: '#1a1a1a',
+                    borderRight: '1px solid #262626',
+                    overflowY: 'auto',
+                    padding: '1rem',
+                  }}
+                >
                   <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#999' }}>Markets</h3>
                   {loading ? (
                     <div style={{ color: '#999', fontSize: '0.75rem' }}>Loading...</div>
+                  ) : viewMode === 'perps' ? (
+                    [
+                      'PERP_BTC_USDC',
+                      'PERP_ETH_USDC',
+                      'PERP_SOL_USDC',
+                      'PERP_BNB_USDC',
+                      'PERP_XRP_USDC',
+                      'PERP_ADA_USDC',
+                      'PERP_DOGE_USDC',
+                      'PERP_SHIB_USDC',
+                      'PERP_AVAX_USDC',
+                      'PERP_TRX_USDC',
+                    ].map((symbol) => (
+                      <div
+                        key={symbol}
+                        className="token-card"
+                        onClick={() => setSelectedPerpSymbol(symbol)}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '0.5rem',
+                          marginBottom: '0.5rem',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          background: selectedPerpSymbol === symbol ? '#333' : 'transparent',
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>
+                            {symbol.replace('PERP_', '').replace('_USDC', '')}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#666' }}>Perpetual</div>
+                        </div>
+                      </div>
+                    ))
                   ) : (
                     tokens.map((token) => (
                       <div
@@ -552,12 +663,31 @@ function App() {
                   )}
                 </div>
 
-                <div style={mainContentStyle} className="main-content">
+                <div
+                  className="main-content"
+                  style={{
+                    gridArea: 'main',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ padding: '0.75rem' }}>
+                    <TokenSelector
+                      viewMode={viewMode}
+                      tokens={tokens}
+                      selectedToken={selectedToken}
+                      setSelectedToken={setSelectedToken}
+                      selectedPerpSymbol={selectedPerpSymbol}
+                      setSelectedPerpSymbol={setSelectedPerpSymbol}
+                    />
+                  </div>
+
                   {selectedToken && (
                     <>
                       <div
                         className="info-box"
-                        style={{ padding: isMobile ? '0.5rem' : '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
+                        style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
@@ -589,18 +719,25 @@ function App() {
                           </div>
                         </div>
                       </div>
-                      <div style={chartContainerStyle}>
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
                         <TradingViewChart 
-                          symbol={selectedToken?.symbol}
                           tokenAddress={selectedToken?.address}
-                          isMobile={isMobile}
                         />
                       </div>
                     </>
                   )}
                 </div>
 
-                <div style={tradeStyle} className="trading-panel">
+                <div
+                  className="trading-panel"
+                  style={{
+                    gridArea: 'trade',
+                    background: '#1a1a1a',
+                    borderLeft: '1px solid #262626',
+                    padding: '0.75rem',
+                    overflowY: 'auto',
+                  }}
+                >
                   <SpotInterface selectedToken={selectedToken} allTokens={tokens} setSelectedToken={setSelectedToken} />
                 </div>
               </div>

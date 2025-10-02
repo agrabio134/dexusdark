@@ -20,7 +20,10 @@
 .portal_container.text-primary-text\/50{
   display: none !important;
 }
-
+span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
+{
+  display: none;
+}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

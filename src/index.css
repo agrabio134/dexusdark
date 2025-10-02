@@ -4,7 +4,10 @@
   box-sizing: border-box;
 }
 
-
+span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
+{
+  display: none;
+}
 body {
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
   color: #000000;
