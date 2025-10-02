@@ -207,35 +207,22 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   useEffect(() => {
     if (jupiterLoaded && window.Jupiter && outputToken) {
-      let initialInputMint, initialOutputMint, fixedInputMint, fixedOutputMint;
-      if (side === 'buy') {
-        initialInputMint = SOL_MINT;
-        initialOutputMint = outputToken.address;
-        fixedInputMint = true;
-        fixedOutputMint = false;
-      } else {
-        initialInputMint = outputToken.address;
-        initialOutputMint = SOL_MINT;
-        fixedInputMint = false;
-        fixedOutputMint = true;
-      }
-
+      const initialInputMint = side === 'buy' ? SOL_MINT : outputToken.address;
+      const initialOutputMint = side === 'buy' ? outputToken.address : SOL_MINT;
       window.Jupiter.init({
-        displayMode: 'integrated',
-        integratedTargetId: 'jupiter-terminal',
+        displayMode: "integrated",
+        integratedTargetId: "jupiter-terminal",
         endpoint: connection.rpcEndpoint,
         formProps: {
-          swapMode: 'ExactIn',
-          initialAmount: null,
           initialInputMint,
           initialOutputMint,
-          fixedInputMint,
-          fixedOutputMint,
+          fixedInputMint: true,
+          fixedOutputMint: true,
         },
-        enableWalletPassthrough: true,
         branding: {
-          name: 'USDARK-DEX',
-          logoUri: 'https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto',
+          name: "USDARK-DEX",
+          logoUri:
+            "https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto",
         },
       });
     }
@@ -243,7 +230,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   useEffect(() => {
     if (window.Jupiter && wallet) {
-      window.Jupiter.syncProps({ passthroughWalletContextState: wallet });
+      window.Jupiter.syncProps({ passthroughWallet: wallet });
     }
   }, [wallet]);
 
@@ -259,7 +246,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
-      <h3 style={{ fontSize: '0.75rem', marginBottom: '0.5rem', color: '#fff' }}>Spot Trading</h3>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
         <button
@@ -292,24 +278,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         >
           Sell
         </button>
-      </div>
-
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ display: 'block', fontSize: '0.625rem', color: '#999', marginBottom: '0.4rem' }}>
-          Available
-        </label>
-        <div style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-          {side === 'buy' ? balance.toFixed(4) : tokenBalance.toFixed(4)} {side === 'buy' ? 'SOL' : outputToken?.symbol}
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ display: 'block', fontSize: '0.625rem', color: '#999', marginBottom: '0.4rem' }}>
-          Price
-        </label>
-        <div style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-          ${outputToken?.price.toFixed(6)}
-        </div>
       </div>
 
       <div id="jupiter-terminal" style={{ width: '100%', height: '400px' }}></div>
@@ -417,7 +385,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
 
   const network = WalletAdapterNetwork.Mainnet;
-  const endpoint = useMemo(() => 'https://api.mainnet-beta.solana.com', []);
+  const endpoint = useMemo(() => 'https://rpc.ankr.com/solana', []);
   const wallets = useMemo(() => [], []); // Removed adapters as they are standard
 
   useEffect(() => {
@@ -596,6 +564,7 @@ function App() {
             <div
               style={{
                 minHeight: '100vh',
+                height: '100vh',
                 background: '#0d0d0d',
                 color: '#fff',
                 position: 'relative',
@@ -784,4 +753,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
