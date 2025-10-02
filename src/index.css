@@ -16,6 +16,10 @@ body {
   overflow-x: hidden;
 }
 
+.wallet-adapter-modal-title{
+  font-family: 'Orbitron', monospace;
+}
+
 .dark-particle {
   position: fixed;
   color: rgba(0, 0, 0, 0.3);
