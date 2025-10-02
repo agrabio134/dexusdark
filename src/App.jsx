@@ -503,7 +503,6 @@ function App() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <WalletMultiButton className="wallet-adapter-button-desktop" />
-                  <WalletIconButton />
                 </div>
               </div>
 

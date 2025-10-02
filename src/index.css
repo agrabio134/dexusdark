@@ -124,9 +124,7 @@ input {
 .blur .main-container {
   filter: blur(5px);
 }
-.jupiter-terminal [class*="powered-by"],
-.jupiter-terminal [class*="PoweredBy"],
-.jupiter-terminal a[href*="jup.ag"],  .custom-fcnbia {
+.portal_container.text-primary-text\/50{
   display: none !important;
 }
 
@@ -221,7 +219,11 @@ input {
 @media (max-width: 480px) {
   .nav-btn {
     padding: 0.3rem 0.6rem;
-    font-size: 0.5rem;
+    font-size: 0.2rem;
+  }
+
+  .nav-bar{
+    display: flex;
   }
 
   h1 {
