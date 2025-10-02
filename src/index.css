@@ -139,7 +139,7 @@ input {
   .trading-panel {
     border-left: none;
     border-top: 1px solid #262626;
-    max-height: 300px;
+    max-height: 100%;
     overflow-y: auto;
   }
 

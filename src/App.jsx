@@ -144,11 +144,8 @@ function TradingViewChart({ symbol, isUSDARK, isMobile }) {
 function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const wallet = useWallet();
   const { connection } = useConnection();
-  const [side, setSide] = useState('buy');
   const [searchQuery, setSearchQuery] = useState('');
   const [showTokenList, setShowTokenList] = useState(false);
-  const [balance, setBalance] = useState(0);
-  const [tokenBalance, setTokenBalance] = useState(0);
   const [outputToken, setOutputToken] = useState(null);
   const [jupiterLoaded, setJupiterLoaded] = useState(false);
 
@@ -158,34 +155,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       setShowTokenList(false);
     }
   }, [selectedToken]);
-
-  useEffect(() => {
-    const fetchBalances = async () => {
-      if (wallet.connected && wallet.publicKey) {
-        try {
-          const solBalance = (await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL;
-          setBalance(solBalance);
-        } catch (e) {
-          console.error('SOL Balance fetch error:', e);
-          setBalance(0);
-        }
-        if (outputToken) {
-          try {
-            const mint = new PublicKey(outputToken.address);
-            const ata = getAssociatedTokenAddressSync(mint, wallet.publicKey);
-            const tokenBal = await connection.getTokenAccountBalance(ata);
-            setTokenBalance(tokenBal.value.uiAmount || 0);
-          } catch (e) {
-            console.error('Token Balance fetch error:', e);
-            setTokenBalance(0);
-          }
-        }
-      }
-    };
-    fetchBalances();
-    const interval = setInterval(fetchBalances, 10000);
-    return () => clearInterval(interval);
-  }, [wallet.connected, connection, wallet.publicKey, outputToken]);
 
   useEffect(() => {
     const loadJupiterScript = () => {
@@ -207,15 +176,14 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   useEffect(() => {
     if (jupiterLoaded && window.Jupiter && outputToken) {
-      const initialInputMint = side === 'buy' ? SOL_MINT : outputToken.address;
-      const initialOutputMint = side === 'buy' ? outputToken.address : SOL_MINT;
       window.Jupiter.init({
         displayMode: "integrated",
         integratedTargetId: "jupiter-terminal",
         endpoint: connection.rpcEndpoint,
+        enableWalletPassthrough: true,
         formProps: {
-          initialInputMint,
-          initialOutputMint,
+          initialInputMint: SOL_MINT,
+          initialOutputMint: outputToken.address,
           fixedInputMint: true,
           fixedOutputMint: true,
         },
@@ -226,11 +194,17 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         },
       });
     }
-  }, [jupiterLoaded, side, outputToken, connection.rpcEndpoint]);
+  }, [jupiterLoaded, outputToken, connection.rpcEndpoint]);
 
   useEffect(() => {
     if (window.Jupiter && wallet) {
-      window.Jupiter.syncProps({ passthroughWallet: wallet });
+      window.Jupiter.syncProps({
+        passthroughWallet: {
+          signTransaction: wallet.signTransaction,
+          signAllTransactions: wallet.signAllTransactions,
+          publicKey: wallet.publicKey,
+        },
+      });
     }
   }, [wallet]);
 
@@ -246,41 +220,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
-        <button
-          onClick={() => setSide('buy')}
-          style={{
-            padding: '0.4rem',
-            border: 'none',
-            borderRadius: '4px',
-            background: side === 'buy' ? '#52c41a' : '#2a2a2a',
-            color: 'white',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
-        >
-          Buy
-        </button>
-        <button
-          onClick={() => setSide('sell')}
-          style={{
-            padding: '0.4rem',
-            border: 'none',
-            borderRadius: '4px',
-            background: side === 'sell' ? '#ff4d4f' : '#2a2a2a',
-            color: 'white',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
-        >
-          Sell
-        </button>
-      </div>
-
-      <div id="jupiter-terminal" style={{ width: '100%', height: '400px' }}></div>
+      <div id="jupiter-terminal" style={{ width: '100%', height: '500px' }}></div>
 
       <div style={{ marginTop: '0.5rem' }}>
         <div
@@ -517,8 +457,8 @@ function App() {
     display: 'grid',
     gridTemplateColumns: isMobile ? '1fr' : '250px 1fr 350px',
     gridTemplateAreas: isMobile ? '"sidebar" "main" "trade"' : '"sidebar main trade"',
-    height: isMobile ? 'auto' : 'calc(100vh - 60px)',
-    minHeight: isMobile ? 'auto' : 'calc(100vh - 60px)',
+    height: isMobile ? 'auto' : 'calc(100vh - 100px)',
+    minHeight: isMobile ? 'calc(100vh - 100px)' : 'calc(100vh - 100px)',
     gap: isMobile ? '0' : '0',
   };
 
