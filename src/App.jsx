@@ -1,17 +1,15 @@
 import { useState, useEffect, useMemo, useRef, Component } from 'react';
 import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
+import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import axios from 'axios';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
-const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
-const JUPITER_SWAP_API = 'https://quote-api.jup.ag/v6/swap';
 const JUPITER_TOKEN_LIST = 'https://token.jup.ag/strict';
+const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -60,64 +58,7 @@ function WalletIconButton() {
   );
 }
 
-function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, selectedPerpSymbol, setSelectedPerpSymbol }) {
-  return (
-    <select
-      className="token-selector"
-      value={viewMode === 'perps' ? selectedPerpSymbol || '' : selectedToken?.address || ''}
-      onChange={(e) => {
-        if (viewMode === 'perps') {
-          setSelectedPerpSymbol(e.target.value);
-        } else {
-          const token = tokens.find((t) => t.address === e.target.value);
-          if (token) setSelectedToken(token);
-        }
-      }}
-      style={{
-        width: '100%',
-        padding: '0.4rem',
-        background: '#2a2a2a',
-        border: '1px solid #333',
-        borderRadius: '4px',
-        color: '#fff',
-        fontSize: '0.75rem',
-        appearance: 'none',
-        backgroundImage:
-          'url("data:image/svg+xml;utf8,<svg fill=\'white\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right 0.4rem center',
-        backgroundSize: '0.8rem',
-      }}
-    >
-      {viewMode === 'perps' ? (
-        [
-          'PERP_BTC_USDC',
-          'PERP_ETH_USDC',
-          'PERP_SOL_USDC',
-          'PERP_BNB_USDC',
-          'PERP_XRP_USDC',
-          'PERP_ADA_USDC',
-          'PERP_DOGE_USDC',
-          'PERP_SHIB_USDC',
-          'PERP_AVAX_USDC',
-          'PERP_TRX_USDC',
-        ].map((symbol) => (
-          <option key={symbol} value={symbol}>
-            {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
-          </option>
-        ))
-      ) : (
-        tokens.map((token) => (
-          <option key={token.address} value={token.address}>
-            {token.symbol}/SOL
-          </option>
-        ))
-      )}
-    </select>
-  );
-}
-
-function TradingViewChart({ symbol, marketType, isUSDARK }) {
+function TradingViewChart({ symbol, isUSDARK, isMobile }) {
   const containerRef = useRef(null);
   const widgetRef = useRef(null);
 
@@ -161,18 +102,18 @@ function TradingViewChart({ symbol, marketType, isUSDARK }) {
         } catch (e) {}
       }
     };
-  }, [symbol, marketType, isUSDARK]);
+  }, [symbol, isUSDARK]);
 
   if (isUSDARK) {
     return (
       <div
-        style={{ width: '100%', height: '100%', minHeight: '300px' }}
+        style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px' }}
       >
         <div
           style={{
             position: 'relative',
             width: '100%',
-            paddingBottom: '65%',
+            paddingBottom: '100%',
           }}
         >
           <iframe
@@ -194,26 +135,22 @@ function TradingViewChart({ symbol, marketType, isUSDARK }) {
   return (
     <div
       ref={containerRef}
-      id={`tradingview_chart_${marketType}_${symbol}`}
-      style={{ width: '100%', height: '100%', minHeight: '300px', background: '#131722' }}
+      id={`tradingview_chart_${symbol}`}
+      style={{ width: '100%', height: '100%', minHeight: isMobile ? '400px' : '300px', background: '#131722' }}
     />
   );
 }
 
-function SpotInterface({ selectedToken, allTokens }) {
+function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const wallet = useWallet();
   const { connection } = useConnection();
   const [side, setSide] = useState('buy');
-  const [amount, setAmount] = useState('');
-  const [sliderValue, setSliderValue] = useState(0);
-  const [outputAmount, setOutputAmount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [quote, setQuote] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showTokenList, setShowTokenList] = useState(false);
   const [balance, setBalance] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [outputToken, setOutputToken] = useState(null);
+  const [jupiterLoaded, setJupiterLoaded] = useState(false);
 
   useEffect(() => {
     if (selectedToken) {
@@ -224,90 +161,101 @@ function SpotInterface({ selectedToken, allTokens }) {
 
   useEffect(() => {
     const fetchBalances = async () => {
-      if (wallet.connected) {
-        const solBalance = (await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL;
-        setBalance(solBalance);
+      if (wallet.connected && wallet.publicKey) {
+        try {
+          const solBalance = (await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL;
+          setBalance(solBalance);
+        } catch (e) {
+          console.error('SOL Balance fetch error:', e);
+          setBalance(0);
+        }
         if (outputToken) {
-          const mint = new PublicKey(outputToken.address);
-          const ata = getAssociatedTokenAddressSync(mint, wallet.publicKey);
           try {
+            const mint = new PublicKey(outputToken.address);
+            const ata = getAssociatedTokenAddressSync(mint, wallet.publicKey);
             const tokenBal = await connection.getTokenAccountBalance(ata);
             setTokenBalance(tokenBal.value.uiAmount || 0);
           } catch (e) {
+            console.error('Token Balance fetch error:', e);
             setTokenBalance(0);
           }
         }
       }
     };
     fetchBalances();
-  }, [wallet.connected, connection, outputToken]);
+    const interval = setInterval(fetchBalances, 10000);
+    return () => clearInterval(interval);
+  }, [wallet.connected, connection, wallet.publicKey, outputToken]);
 
   useEffect(() => {
-    const getQuote = async () => {
-      if (!amount || parseFloat(amount) <= 0 || !outputToken) return;
-      try {
-        setLoading(true);
-        const inputMint = side === 'buy' ? SOL_MINT : outputToken.address;
-        const outputMint = side === 'buy' ? outputToken.address : SOL_MINT;
-        const inputAmount = parseFloat(amount) * (side === 'buy' ? LAMPORTS_PER_SOL : 10 ** (outputToken.decimals || 9));
-        const { data } = await axios.get(JUPITER_QUOTE_API, {
-          params: {
-            inputMint,
-            outputMint,
-            amount: inputAmount,
-            slippageBps: 50,
-          },
-        });
-        setQuote(data);
-        setOutputAmount(data.outAmount / (side === 'buy' ? 10 ** (outputToken.decimals || 9) : LAMPORTS_PER_SOL));
-      } catch (error) {
-        console.error('Quote error:', error);
-      } finally {
-        setLoading(false);
+    const loadJupiterScript = () => {
+      if (!document.getElementById('jupiter-plugin-script')) {
+        const script = document.createElement('script');
+        script.id = 'jupiter-plugin-script';
+        script.src = 'https://plugin.jup.ag/plugin-v1.js';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+          setJupiterLoaded(true);
+        };
+      } else {
+        setJupiterLoaded(true);
       }
     };
-    const timer = setTimeout(getQuote, 500);
-    return () => clearTimeout(timer);
-  }, [amount, side, outputToken]);
+    loadJupiterScript();
+  }, []);
 
-  const executeSwap = async () => {
-    if (!wallet.connected || !quote) {
-      alert('Connect wallet and get quote first');
-      return;
-    }
-    try {
-      setLoading(true);
-      const { data } = await axios.post(JUPITER_SWAP_API, {
-        quoteResponse: quote,
-        userPublicKey: wallet.publicKey.toBase58(),
-        wrapAndUnwrapSol: true,
+  useEffect(() => {
+    if (jupiterLoaded && window.Jupiter && outputToken) {
+      let initialInputMint, initialOutputMint, fixedInputMint, fixedOutputMint;
+      if (side === 'buy') {
+        initialInputMint = SOL_MINT;
+        initialOutputMint = outputToken.address;
+        fixedInputMint = true;
+        fixedOutputMint = false;
+      } else {
+        initialInputMint = outputToken.address;
+        initialOutputMint = SOL_MINT;
+        fixedInputMint = false;
+        fixedOutputMint = true;
+      }
+
+      window.Jupiter.init({
+        displayMode: 'integrated',
+        integratedTargetId: 'jupiter-terminal',
+        endpoint: connection.rpcEndpoint,
+        formProps: {
+          swapMode: 'ExactIn',
+          initialAmount: null,
+          initialInputMint,
+          initialOutputMint,
+          fixedInputMint,
+          fixedOutputMint,
+        },
+        enableWalletPassthrough: true,
+        branding: {
+          name: 'USDARK-DEX',
+          logoUri: 'https://cdn.dexscreener.com/cms/images/125b5d42da25f4c928fb76a0c5ce4524d32a9c5e63e129648071aa402ce247fd?width=64&height=64&fit=crop&quality=95&format=auto',
+        },
       });
-      const tx = VersionedTransaction.deserialize(Buffer.from(data.swapTransaction, 'base64'));
-      const signed = await wallet.signTransaction(tx);
-      const txid = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: true });
-      alert(`Success! TX: ${txid}`);
-      setAmount('');
-      setSliderValue(0);
-      setOutputAmount(0);
-      setQuote(null);
-    } catch (error) {
-      alert('Swap failed: ' + error.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [jupiterLoaded, side, outputToken, connection.rpcEndpoint]);
 
-  const handleSliderChange = (value) => {
-    setSliderValue(value);
-    const maxBalance = side === 'buy' ? balance : tokenBalance;
-    setAmount(((value / 100) * maxBalance).toString());
-  };
+  useEffect(() => {
+    if (window.Jupiter && wallet) {
+      window.Jupiter.syncProps({ passthroughWalletContextState: wallet });
+    }
+  }, [wallet]);
 
   const filteredTokens = allTokens.filter(
     (token) =>
       token.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       token.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (!selectedToken) {
+    return <div style={{ padding: '1rem', textAlign: 'center', color: '#999' }}>Select a token to trade</div>;
+  }
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
@@ -364,84 +312,7 @@ function SpotInterface({ selectedToken, allTokens }) {
         </div>
       </div>
 
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ display: 'block', fontSize: '0.625rem', color: '#999', marginBottom: '0.4rem' }}>
-          Total
-        </label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => {
-            const value = e.target.value;
-            setAmount(value);
-            const maxBalance = side === 'buy' ? balance : tokenBalance;
-            setSliderValue(value && maxBalance > 0 ? (parseFloat(value) / maxBalance) * 100 : 0);
-          }}
-          placeholder="0"
-          style={{
-            width: '100%',
-            padding: '0.4rem',
-            background: '#2a2a2a',
-            border: '1px solid #333',
-            borderRadius: '4px',
-            color: '#fff',
-            fontSize: '0.75rem',
-          }}
-        />
-        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.4rem' }}>
-          {side === 'buy' ? 'SOL' : outputToken?.symbol}
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '0.5rem' }}>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={sliderValue}
-          onChange={(e) => handleSliderChange(e.target.value)}
-          style={{ width: '100%' }}
-        />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', color: '#666', marginTop: '0.2rem' }}>
-          <span>0%</span>
-          <span>Max</span>
-        </div>
-      </div>
-
-      {outputAmount > 0 && (
-        <div
-          style={{
-            padding: '0.4rem',
-            background: 'rgba(82, 196, 26, 0.1)',
-            borderRadius: '4px',
-            marginBottom: '0.5rem',
-            border: '1px solid #52c41a',
-          }}
-        >
-          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#52c41a' }}>
-            Receive ~ {outputAmount.toFixed(6)} {side === 'buy' ? outputToken?.symbol : 'SOL'}
-          </div>
-        </div>
-      )}
-
-      <button
-        onClick={executeSwap}
-        disabled={loading || !amount || parseFloat(amount) <= 0 || !wallet.connected}
-        style={{
-          width: '100%',
-          padding: '0.5rem',
-          border: 'none',
-          borderRadius: '4px',
-          background: side === 'buy' ? '#52c41a' : '#ff4d4f',
-          color: 'white',
-          fontSize: '0.75rem',
-          fontWeight: 'bold',
-          cursor: wallet.connected && amount && parseFloat(amount) > 0 ? 'pointer' : 'not-allowed',
-          opacity: wallet.connected && amount && parseFloat(amount) > 0 ? 1 : 0.5,
-        }}
-      >
-        {wallet.connected ? (loading ? 'Swapping...' : `${side === 'buy' ? 'Buy' : 'Sell'} ${outputToken?.symbol}`) : 'Connect wallet'}
-      </button>
+      <div id="jupiter-terminal" style={{ width: '100%', height: '400px' }}></div>
 
       <div style={{ marginTop: '0.5rem' }}>
         <div
@@ -504,6 +375,7 @@ function SpotInterface({ selectedToken, allTokens }) {
                 key={token.address}
                 onClick={() => {
                   setOutputToken(token);
+                  setSelectedToken(token);
                   setShowTokenList(false);
                   setSearchQuery('');
                 }}
@@ -540,22 +412,43 @@ function SpotInterface({ selectedToken, allTokens }) {
 function App() {
   const [tokens, setTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(null);
-  const [selectedPerpSymbol, setSelectedPerpSymbol] = useState('PERP_ETH_USDC');
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('spot');
   const [tokenMeta, setTokenMeta] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+  const network = WalletAdapterNetwork.Mainnet;
+  const endpoint = useMemo(() => 'https://api.mainnet-beta.solana.com', []);
+  const wallets = useMemo(() => [], []); // Removed adapters as they are standard
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const copyCA = () => {
+    navigator.clipboard.writeText(USDARK_CA).then(() => {
+      alert('CA copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy CA:', err);
+    });
+  };
 
   useEffect(() => {
     const loadTokenMeta = async () => {
       try {
-        const { data } = await axios.get(JUPITER_TOKEN_LIST);
-        setTokenMeta(data);
+        const response = await fetch(JUPITER_TOKEN_LIST);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setTokenMeta(data.tokens || data);
       } catch (e) {
         console.error('Error loading token list:', e);
+        setTokenMeta([]);
       }
     };
     loadTokenMeta();
@@ -570,7 +463,7 @@ function App() {
 
         // Fetch specific token first
         try {
-          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark`);
+          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${USDARK_CA}`);
           const data = await response.json();
           if (data.pairs) {
             const filtered = data.pairs
@@ -610,12 +503,12 @@ function App() {
               },
             ])
           ).values()
-        ).filter((t) => t.address !== SOL_MINT && (t.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark' || t.volume24h > 10000));
+        ).filter((t) => t.address !== SOL_MINT && (t.address === USDARK_CA || t.volume24h > 10000));
 
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
 
         // Move USDARK to the front
-        const darkIndex = sortedTokens.findIndex(t => t.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark');
+        const darkIndex = sortedTokens.findIndex(t => t.address === USDARK_CA);
         if (darkIndex !== -1) {
           const darkToken = sortedTokens.splice(darkIndex, 1)[0];
           sortedTokens.unshift(darkToken);
@@ -652,257 +545,243 @@ function App() {
     return `$${(num / 1e3).toFixed(2)}K`;
   };
 
+  const mainContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '250px 1fr 350px',
+    gridTemplateAreas: isMobile ? '"sidebar" "main" "trade"' : '"sidebar main trade"',
+    height: isMobile ? 'auto' : 'calc(100vh - 60px)',
+    minHeight: isMobile ? 'auto' : 'calc(100vh - 60px)',
+    gap: isMobile ? '0' : '0',
+  };
+
+  const mainContentStyle = {
+    gridArea: 'main',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: isMobile ? 'visible' : 'hidden',
+    height: isMobile ? 'auto' : '100%',
+    width: '100%',
+  };
+
+  const chartContainerStyle = {
+    flex: isMobile ? 'none' : 1,
+    overflow: 'hidden',
+    height: isMobile ? '400px' : '100%',
+    width: '100%',
+  };
+
+  const sidebarStyle = {
+    gridArea: 'sidebar',
+    background: '#1a1a1a',
+    borderRight: isMobile ? 'none' : '1px solid #262626',
+    overflowY: 'auto',
+    padding: isMobile ? '0.5rem' : '1rem',
+    width: '100%',
+  };
+
+  const tradeStyle = {
+    gridArea: 'trade',
+    background: '#1a1a1a',
+    borderLeft: isMobile ? 'none' : '1px solid #262626',
+    padding: isMobile ? '0.5rem' : '0.75rem',
+    overflowY: isMobile ? 'visible' : 'auto',
+    width: '100%',
+  };
+
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <div
-            style={{
-              minHeight: '100vh',
-              background: '#0d0d0d',
-              color: '#fff',
-              position: 'relative',
-            }}
-          >
+    <ErrorBoundary>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
             <div
               style={{
-                borderBottom: '1px solid #262626',
-                padding: '0.75rem 1rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                background: '#1a1a1a',
-                flexWrap: 'wrap',
-                position: 'sticky',
-                top: 0,
-                zIndex: 900,
+                minHeight: '100vh',
+                background: '#0d0d0d',
+                color: '#fff',
+                position: 'relative',
               }}
-              className="nav-bar"
-            >
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button
-                    onClick={() => setViewMode('spot')}
-                    className="nav-btn"
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      background: viewMode === 'spot' ? '#333' : 'transparent',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Spot
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.location.href = `https://usdark.trade/perp/${selectedPerpSymbol}/`;
-                    }}
-                    className="nav-btn"
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      background: viewMode === 'perps' ? '#333' : 'transparent',
-                      border: 'none',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Perpetuals
-                  </button>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <WalletMultiButton className="wallet-adapter-button-desktop" />
-                <WalletIconButton />
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '250px 1fr 350px',
-                gridTemplateAreas: '"sidebar main trade"',
-                height: 'calc(100vh - 60px)',
-              }}
-              className="main-container"
             >
               <div
-                className="markets-sidebar"
                 style={{
-                  gridArea: 'sidebar',
                   background: '#1a1a1a',
-                  borderRight: '1px solid #262626',
-                  overflowY: 'auto',
-                  padding: '1rem',
+                  padding: '0.5rem 1rem',
+                  textAlign: 'center',
+                  borderBottom: '1px solid #262626',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1000,
                 }}
               >
-                <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#999' }}>Markets</h3>
-                {viewMode === 'perps' ? (
-                  [
-                    'PERP_BTC_USDC',
-                    'PERP_ETH_USDC',
-                    'PERP_SOL_USDC',
-                    'PERP_BNB_USDC',
-                    'PERP_XRP_USDC',
-                    'PERP_ADA_USDC',
-                    'PERP_DOGE_USDC',
-                    'PERP_SHIB_USDC',
-                    'PERP_AVAX_USDC',
-                    'PERP_TRX_USDC',
-                  ].map((symbol) => (
-                    <div
-                      key={symbol}
-                      className="token-card"
-                      onClick={() => setSelectedPerpSymbol(symbol)}
+                <div 
+                  onClick={copyCA}
+                  style={{ 
+                    fontSize: isMobile ? '0.7rem' : '0.875rem', 
+                    color: '#999',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  CA: {USDARK_CA}
+                </div>
+              </div>
+              <div
+                style={{
+                  borderBottom: '1px solid #262626',
+                  padding: '0.75rem 1rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: '#1a1a1a',
+                  flexWrap: 'wrap',
+                  position: 'sticky',
+                  top: '40px',
+                  zIndex: 900,
+                }}
+                className="nav-bar"
+              >
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button
+                      className="nav-btn"
                       style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        padding: '0.5rem',
-                        marginBottom: '0.5rem',
-                        borderRadius: '4px',
+                        padding: '0.4rem 0.8rem',
+                        background: '#333',
+                        border: 'none',
+                        color: '#fff',
                         cursor: 'pointer',
-                        background: selectedPerpSymbol === symbol ? '#333' : 'transparent',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
                       }}
                     >
-                      <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>
-                          {symbol.replace('PERP_', '').replace('_USDC', '')}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Perpetual</div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  tokens.map((token) => (
-                    <div
-                      key={token.address}
-                      className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''}`}
-                      onClick={() => setSelectedToken(token)}
+                      Spot
+                    </button>
+                    <button
+                      onClick={() => { window.location.href = 'https://usdark.trade/perp/PERP_ETH_USDC/'; }}
                       style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        padding: '0.5rem',
-                        marginBottom: '0.5rem',
-                        borderRadius: '4px',
+                        padding: '0.4rem 0.8rem',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#fff',
                         cursor: 'pointer',
-                        background: selectedToken?.address === token.address ? '#333' : 'transparent',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {token.logoURI && (
-                          <img src={token.logoURI} alt={token.symbol} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
-                        )}
-                        <div>
-                          <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{token.symbol}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#666' }}>{token.name}</div>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '0.875rem' }}>{formatPrice(token.price)}</div>
-                        <div
-                          style={{
-                            fontSize: '0.75rem',
-                            color: token.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
-                          }}
-                        >
-                          {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
+                      Perpetuals
+                    </button>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <WalletMultiButton className="wallet-adapter-button-desktop" />
+                  <WalletIconButton />
+                </div>
               </div>
 
-              <div
-                className="main-content"
-                style={{
-                  gridArea: 'main',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden',
-                }}
-              >
-                <div style={{ padding: '0.75rem' }}>
-                  <TokenSelector
-                    viewMode={viewMode}
-                    tokens={tokens}
-                    selectedToken={selectedToken}
-                    setSelectedToken={setSelectedToken}
-                    selectedPerpSymbol={selectedPerpSymbol}
-                    setSelectedPerpSymbol={setSelectedPerpSymbol}
-                  />
-                </div>
-
-                {selectedToken && (
-                  <>
-                    <div
-                      className="info-box"
-                      style={{ padding: '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
-                          {selectedToken.symbol}/SOL
-                        </h2>
-                        <div>
-                          <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
-                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatPrice(selectedToken.price)}</span>
+              <div style={mainContainerStyle} className="main-container">
+                <div style={sidebarStyle} className="markets-sidebar">
+                  <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#999' }}>Markets</h3>
+                  {loading ? (
+                    <div style={{ color: '#999', fontSize: '0.75rem' }}>Loading...</div>
+                  ) : (
+                    tokens.map((token) => (
+                      <div
+                        key={token.address}
+                        className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''}`}
+                        onClick={() => setSelectedToken(token)}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '0.5rem',
+                          marginBottom: '0.5rem',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          background: selectedToken?.address === token.address ? '#333' : 'transparent',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          {token.logoURI && (
+                            <img src={token.logoURI} alt={token.symbol} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                          )}
+                          <div>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{token.symbol}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#666' }}>{token.name}</div>
+                          </div>
                         </div>
-                        <div>
-                          <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
-                          <span
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '0.875rem' }}>{formatPrice(token.price)}</div>
+                          <div
                             style={{
-                              fontWeight: 'bold',
                               fontSize: '0.75rem',
-                              color: selectedToken.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
+                              color: token.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
                             }}
                           >
-                            {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
-                          </span>
-                        </div>
-                        <div>
-                          <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Volume: </span>
-                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.volume24h)}</span>
-                        </div>
-                        <div>
-                          <span style={{ color: '#999', fontSize: '0.75rem' }}>Liquidity: </span>
-                          <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.liquidity)}</span>
+                            {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <TradingViewChart 
-                        symbol={selectedToken?.symbol} 
-                        marketType={viewMode} 
-                        isUSDARK={selectedToken?.address === '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark'}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
+                    ))
+                  )}
+                </div>
 
-              <div
-                className="trading-panel"
-                style={{
-                  gridArea: 'trade',
-                  background: '#1a1a1a',
-                  borderLeft: '1px solid #262626',
-                  padding: '0.75rem',
-                  overflowY: 'auto',
-                }}
-              >
-                <SpotInterface selectedToken={selectedToken} allTokens={tokens} />
+                <div style={mainContentStyle} className="main-content">
+                  {selectedToken && (
+                    <>
+                      <div
+                        className="info-box"
+                        style={{ padding: isMobile ? '0.5rem' : '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
+                            {selectedToken.symbol}/SOL
+                          </h2>
+                          <div>
+                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatPrice(selectedToken.price)}</span>
+                          </div>
+                          <div>
+                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
+                            <span
+                              style={{
+                                fontWeight: 'bold',
+                                fontSize: '0.75rem',
+                                color: selectedToken.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
+                              }}
+                            >
+                              {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
+                            </span>
+                          </div>
+                          <div>
+                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Volume: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.volume24h)}</span>
+                          </div>
+                          <div>
+                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Liquidity: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.liquidity)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={chartContainerStyle}>
+                        <TradingViewChart 
+                          symbol={selectedToken?.symbol} 
+                          isUSDARK={selectedToken?.address === USDARK_CA}
+                          isMobile={isMobile}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div style={tradeStyle} className="trading-panel">
+                  <SpotInterface selectedToken={selectedToken} allTokens={tokens} setSelectedToken={setSelectedToken} />
+                </div>
               </div>
             </div>
-          </div>
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </ErrorBoundary>
   );
 }
 
-export default App;
+export default App; 
