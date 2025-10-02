@@ -179,7 +179,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const [side, setSide] = useState('buy');
   const [inputAmount, setInputAmount] = useState('');
   const [outputAmount, setOutputAmount] = useState('');
-  const [slippage, setSlippage] = useState(0.5);
+  const [slippage, setSlippage] = useState(1);
   const [balance, setBalance] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [isFetchingQuote, setIsFetchingQuote] = useState(false);
