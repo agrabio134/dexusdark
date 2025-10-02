@@ -10,6 +10,10 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const JUPITER_TOKEN_LIST = 'https://lite-api.jup.ag/tokens/v2/tag?query=verified';
 const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
+const JUP_MINT = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
+const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
+const PUMP_MINT = '6qdnvw4yX6E4S1q8sW8q9Qv7uX6qXqXqXqXqXqXqXqX'; // Placeholder, replace with actual PUMP mint if different
+const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -173,6 +177,63 @@ function TradingViewChart({ tokenAddress, isMobile }) {
   );
 }
 
+function StyledModal({ isOpen, onClose, title, message, type = 'success' }) {
+  if (!isOpen) return null;
+
+  const modalStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10000,
+  };
+
+  const contentStyle = {
+    background: '#1a1a1a',
+    borderRadius: '8px',
+    padding: '2rem',
+    maxWidth: '400px',
+    width: '90%',
+    textAlign: 'center',
+    color: '#fff',
+    border: `1px solid ${type === 'success' ? '#52c41a' : '#ff4d4f'}`,
+  };
+
+  const iconStyle = {
+    fontSize: '3rem',
+    marginBottom: '1rem',
+  };
+
+  return (
+    <div style={modalStyle} onClick={onClose}>
+      <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
+        <div style={iconStyle}>{type === 'success' ? '✅' : '❌'}</div>
+        <h3 style={{ margin: '0 0 1rem 0', color: type === 'success' ? '#52c41a' : '#ff4d4f' }}>{title}</h3>
+        <p style={{ margin: 0 }}>{message}</p>
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: '1rem',
+            padding: '0.5rem 1rem',
+            background: type === 'success' ? '#52c41a' : '#ff4d4f',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const wallet = useWallet();
   const { connection } = useConnection();
@@ -184,6 +245,9 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [isFetchingQuote, setIsFetchingQuote] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -220,8 +284,13 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
     try {
       const inputMint = side === 'buy' ? new PublicKey(SOL_MINT) : new PublicKey(selectedToken.address);
       const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
-      const inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
-      const outputDecimals = side === 'buy' ? selectedToken.decimals || 9 : 9;
+      let inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
+      let outputDecimals = side === 'buy' ? selectedToken.decimals || 9 : 9;
+      // Hardcode for USDARK
+      if (selectedToken.address === USDARK_CA) {
+        inputDecimals = side === 'sell' ? 6 : 9;
+        outputDecimals = side === 'buy' ? 6 : 9;
+      }
       const amountInLamports = Math.floor(parseFloat(amount) * (10 ** inputDecimals));
       if (amountInLamports <= 0) throw new Error('Invalid amount');
       const params = new URLSearchParams({
@@ -273,7 +342,11 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
     try {
       const inputMint = side === 'buy' ? new PublicKey(SOL_MINT) : new PublicKey(selectedToken.address);
       const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
-      const inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
+      let inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
+      // Hardcode for USDARK
+      if (selectedToken.address === USDARK_CA) {
+        inputDecimals = side === 'sell' ? 6 : 9;
+      }
       const amountInLamports = Math.floor(parseFloat(inputAmount) * (10 ** inputDecimals));
       if (amountInLamports <= 0) throw new Error('Invalid amount');
       const params = new URLSearchParams({
@@ -337,10 +410,14 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         }
       };
       fetchBalances();
-      alert(`Swap successful! Tx: ${txid}`);
+      const successMsg = `✅ Swap successful! Transaction ID: ${txid}\n\nYou can view it on Solana Explorer: https://solscan.io/tx/${txid}`;
+      setModalMessage(successMsg);
+      setShowSuccess(true);
     } catch (e) {
       console.error('Swap error:', e);
-      setError(e.message);
+      const errorMsg = `❌ Swap failed: ${e.message}`;
+      setModalMessage(errorMsg);
+      setShowError(true);
     }
   };
 
@@ -356,6 +433,20 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
   return (
     <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
+      <StyledModal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        title="Swap Successful!"
+        message={modalMessage}
+        type="success"
+      />
+      <StyledModal
+        isOpen={showError}
+        onClose={() => setShowError(false)}
+        title="Swap Failed"
+        message={modalMessage}
+        type="error"
+      />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
         <button
           onClick={() => { setSide('buy'); setInputAmount(''); }}
@@ -435,9 +526,9 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         <input
           type="number"
           value={slippage}
-          onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
+          onChange={(e) => setSlippage(Math.max(1, parseFloat(e.target.value) || 1))}
           step="0.1"
-          min="0"
+          min="1"
           style={{
             width: '100%',
             padding: '0.4rem',
@@ -533,54 +624,45 @@ function App() {
     const loadTokens = async () => {
       try {
         setLoading(true);
-        const pairs = ['SOL/USDC', 'BTC/USDC', 'ETH/USDC', 'BONK/USDC', 'JUP/USDC', 'PYTH/USDC', 'WIF/USDC', 'JTO/USDC', 'RNDR/USDC', 'ONDO/USDC'];
         const allTokens = [];
+        const tokenConfigs = [
+          { search: 'USDARK/SOL', mint: USDARK_CA },
+          { search: 'JUP/SOL', mint: JUP_MINT },
+          { search: 'JTO/SOL', mint: JTO_MINT },
+          { search: 'PUMP/SOL', mint: PUMP_MINT },
+          { search: 'USDC/SOL', mint: USDC_MINT },
+        ];
 
-        try {
-          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${USDARK_CA}`);
-          const data = await response.json();
-          if (data.pairs) {
-            const filtered = data.pairs
-              .filter((p) => p.chainId === 'solana' && p.priceUsd && parseFloat(p.volume?.h24 || 0) > 0)
-              .slice(0, 1);
-            allTokens.push(...filtered);
-          }
-        } catch (e) {
-          console.error('Error fetching USDARK:', e);
-        }
-
-        for (const pair of pairs) {
+        for (const config of tokenConfigs) {
           try {
-            const response = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${pair}`);
+            const response = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${config.search}`);
             const data = await response.json();
             if (data.pairs) {
               const filtered = data.pairs
-                .filter((p) => p.chainId === 'solana' && p.priceUsd && parseFloat(p.volume?.h24 || 0) > 10000)
-                .slice(0, 5);
-              allTokens.push(...filtered);
+                .filter((p) => p.chainId === 'solana' && p.baseToken.address === config.mint && p.priceUsd && parseFloat(p.volume?.h24 || 0) > 0)
+                .slice(0, 1)[0];
+              if (filtered) {
+                allTokens.push(filtered);
+              }
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error(`Error fetching ${config.search}:`, e);
+          }
         }
 
-        const uniqueTokens = Array.from(
-          new Map(
-            allTokens.map((pair) => [
-              pair.baseToken?.address,
-              {
-                address: pair.baseToken?.address || '',
-                name: pair.baseToken?.name || 'Unknown',
-                symbol: pair.baseToken?.symbol || '???',
-                price: parseFloat(pair.priceUsd) || 0,
-                priceChange24h: parseFloat(pair.priceChange?.h24) || 0,
-                volume24h: parseFloat(pair.volume?.h24) || 0,
-                liquidity: parseFloat(pair.liquidity?.usd) || 0,
-              },
-            ])
-          ).values()
-        ).filter((t) => t.address !== SOL_MINT && (t.address === USDARK_CA || t.volume24h > 10000));
+        const uniqueTokens = allTokens.map((pair) => ({
+          address: pair.baseToken?.address || '',
+          name: pair.baseToken?.name || 'Unknown',
+          symbol: pair.baseToken?.symbol || '???',
+          price: parseFloat(pair.priceUsd) || 0,
+          priceChange24h: parseFloat(pair.priceChange?.h24) || 0,
+          volume24h: parseFloat(pair.volume?.h24) || 0,
+          liquidity: parseFloat(pair.liquidity?.usd) || 0,
+        }));
 
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
 
+        // Ensure USDARK is first
         const darkIndex = sortedTokens.findIndex(t => t.address === USDARK_CA);
         if (darkIndex !== -1) {
           const darkToken = sortedTokens.splice(darkIndex, 1)[0];
@@ -589,9 +671,14 @@ function App() {
 
         const enrichedTokens = sortedTokens.map((token) => {
           const meta = tokenMeta.find((m) => m.address === token.address);
+          let decimals = meta ? meta.decimals : 9;
+          // Hardcode for USDARK
+          if (token.address === USDARK_CA) {
+            decimals = 6;
+          }
           return {
             ...token,
-            decimals: meta ? meta.decimals : 9,
+            decimals,
             logoURI: meta ? meta.logoURI : null,
           };
         });
