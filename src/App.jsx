@@ -59,7 +59,7 @@ function WalletIconButton() {
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M20 7H4C2.9 7 2 7.9 2 9V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V9C22 7.9 21.1 7 20 7ZM20 9V11H16V13H20V18H4V9H20ZM16 11H18V13H16V11Z"
-          fill={connected ? '#52c41a' : '#fff'}
+          fill={connected ? '#1cc29a' : '#fff'}
         />
       </svg>
     </button>
@@ -205,7 +205,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
     width: '90%',
     textAlign: 'center',
     color: '#fff',
-    border: `1px solid ${type === 'success' ? '#52c41a' : '#ff4d4f'}`,
+    border: `1px solid ${type === 'success' ? '#1cc29a' : '#ff4d4f'}`,
   };
 
   const iconStyle = {
@@ -223,7 +223,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={iconStyle}>{type === 'success' ? '✅' : '❌'}</div>
-        <h3 style={{ margin: '0 0 1rem 0', color: type === 'success' ? '#52c41a' : '#ff4d4f' }}>{title}</h3>
+        <h3 style={{ margin: '0 0 1rem 0', color: type === 'success' ? '#1cc29a' : '#ff4d4f' }}>{title}</h3>
         <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{message}</p>
         {type === 'success' && txid && (
           <button
@@ -231,7 +231,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
             style={{
               marginTop: '1rem',
               padding: '0.5rem 1rem',
-              background: '#52c41a',
+              background: '#1cc29a',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -246,7 +246,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
           onClick={onClose}
           style={{
             padding: '0.5rem 1rem',
-            background: type === 'success' ? '#52c41a' : '#ff4d4f',
+            background: type === 'success' ? '#1cc29a' : '#ff4d4f',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
@@ -455,7 +455,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const maxInput = inputBalance * 0.99;
   const handleMax = () => setInputAmount(maxInput.toFixed(6));
 
-  const swapButtonColor = side === 'buy' ? '#52c41a' : '#ff4d4f';
+  const swapButtonColor = side === 'buy' ? '#1cc29a' : '#ff4d4f';
 
   return (
     <>
@@ -482,7 +482,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               padding: '0.4rem',
               border: 'none',
               borderRadius: '4px',
-              background: side === 'buy' ? '#52c41a' : '#2a2a2a',
+              background: side === 'buy' ? '#1cc29a' : '#2a2a2a',
               color: 'white',
               fontWeight: 'bold',
               cursor: 'pointer',
@@ -807,7 +807,7 @@ function App() {
                   onClick={copyCA}
                   style={{ 
                     fontSize: isMobile ? '0.7rem' : '0.875rem', 
-                    color: '#999',
+                    color: '#1cc29a',
                     cursor: 'pointer',
                     textDecoration: 'underline',
                   }}
@@ -943,7 +943,7 @@ function App() {
                           <div
                             style={{
                               fontSize: '0.75rem',
-                              color: token.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
+                              color: token.priceChange24h >= 0 ? '#1cc29a' : '#ff4d4f',
                             }}
                           >
                             {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
@@ -986,7 +986,7 @@ function App() {
                               style={{
                                 fontWeight: 'bold',
                                 fontSize: '0.75rem',
-                                color: selectedToken.priceChange24h >= 0 ? '#52c41a' : '#ff4d4f',
+                                color: selectedToken.priceChange24h >= 0 ? '#1cc29a' : '#ff4d4f',
                               }}
                             >
                               {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
