@@ -20,6 +20,7 @@ const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
 const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
 const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
 const ONE = 'F8YifePrXyE6VJw9bZChc2sJqLNK9h9q2MwCgP2Upump';
+const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -656,7 +657,7 @@ function App() {
       try {
         setLoading(true);
         const allTokens = [];
-        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE];
+        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU];
 
         for (const mint of mints) {
           try {
