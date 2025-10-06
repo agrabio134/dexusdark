@@ -24,6 +24,8 @@ const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 
+const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
@@ -659,7 +661,7 @@ function App() {
       try {
         setLoading(true);
         const allTokens = [];
-        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU, PFP];
+        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList];
 
         for (const mint of mints) {
           try {
