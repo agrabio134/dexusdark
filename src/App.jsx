@@ -27,10 +27,13 @@ const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
 
 const LISTNEW = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
+
+const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
+
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
-const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
 
   static getDerivedStateFromError(error) {
     return { hasError: true, errorMessage: error.message };
