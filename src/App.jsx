@@ -30,6 +30,8 @@ const LISTNEW = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
+const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
+
   static getDerivedStateFromError(error) {
     return { hasError: true, errorMessage: error.message };
   }
@@ -662,7 +664,7 @@ function App() {
       try {
         setLoading(true);
         const allTokens = [];
-        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList, LISTNEW];
+        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList, LISTNEW, NEWONE];
 
         for (const mint of mints) {
           try {
