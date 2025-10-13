@@ -797,6 +797,29 @@ function App() {
                   CA: {USDARK_CA}
                 </div>
               </div>
+<div
+  style={{
+    borderBottom: '1px solid #262626',
+    padding: '0.5rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    background: '#1a1a1a',
+    color: '#fff',
+    flexWrap: 'nowrap',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    position: 'sticky',
+    top: '40px', // sits right under your main nav
+    zIndex: 900,
+    fontSize: '0.95rem',
+    fontWeight: 500,
+    gap: '0.5rem',
+  }}
+  className="ads-bar"
+>
+  🔥 Trending : <span style={{ color: '#00ff9d', fontWeight: 600 }}>$PFP 🏴 PUMP FUN PEPE 🏴</span>
+</div>
+
 
               <div
                   style={{
