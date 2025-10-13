@@ -797,24 +797,25 @@ function App() {
                   CA: {USDARK_CA}
                 </div>
               </div>
+
               <div
-  style={{
-    borderBottom: '1px solid #262626',
-    padding: '0.75rem 1rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    background: '#1a1a1a',
-    flexWrap: 'nowrap',   // ✅ force all items on one line
-    whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
-    overflow: 'hidden',   // optional: hides overflow
-    position: 'sticky',
-    top: '40px',
-    zIndex: 900,
-  }}
-                className="nav-bar"
-              >
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'start', flexWrap: 'no-wrap' }}>
+                  style={{
+                    borderBottom: '1px solid #262626',
+                    padding: '0.75rem 1rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#1a1a1a',
+                    flexWrap: 'nowrap',   // ✅ force all items on one line
+                    whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
+                    overflow: 'hidden',   // optional: hides overflow
+                    position: 'sticky',
+                    top: '40px',
+                    zIndex: 900,
+                  }}
+                  className="nav-bar"
+               >
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'start', flexWrap: 'no-wrap', alignItems: 'center' }}>
                   <h1 style={{ fontSize: isMobile ? '0.85rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
