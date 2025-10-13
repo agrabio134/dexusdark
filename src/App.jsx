@@ -921,7 +921,7 @@ function App() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0 }} />
+                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0, fontSize: '0.85rem' }} />
                   <WalletIconButton />
                 </div>
               </div>
