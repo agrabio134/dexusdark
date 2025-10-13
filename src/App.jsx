@@ -864,7 +864,7 @@ function App() {
                 className="nav-bar"
               >
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '0.85rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
+                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
                       onClick={() => {
@@ -920,7 +920,7 @@ function App() {
                     </select> */}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                   <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0 }} />
                   <WalletIconButton />
                 </div>
