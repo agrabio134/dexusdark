@@ -815,7 +815,7 @@ function App() {
                   }}
                   className="nav-bar"
                >
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'start', flexWrap: 'no-wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
                   <h1 style={{ fontSize: isMobile ? '0.85rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
