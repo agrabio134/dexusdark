@@ -21,26 +21,16 @@ const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
 const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
 const ONE = 'F8YifePrXyE6VJw9bZChc2sJqLNK9h9q2MwCgP2Upump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
-
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
-
 const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
-
 const LISTNEW = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
-
 const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
-
-
 const ANOTHERLIST = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
-
-
-const NEWTOKEN ='Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
-
+const NEWTOKEN = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'G3FoXHoQDuGkEG8ZqQd7riC9uB1N51bg7JuxJEPNpump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
-
 
   static getDerivedStateFromError(error) {
     return { hasError: true, errorMessage: error.message };
@@ -86,18 +76,14 @@ function WalletIconButton() {
   );
 }
 
-function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, selectedPerpSymbol, setSelectedPerpSymbol }) {
+function TokenSelector({ tokens, selectedToken, setSelectedToken }) {
   return (
     <select
       className="token-selector"
-      value={viewMode === 'perps' ? selectedPerpSymbol || '' : selectedToken?.address || ''}
+      value={selectedToken?.address || ''}
       onChange={(e) => {
-        if (viewMode === 'perps') {
-          setSelectedPerpSymbol(e.target.value);
-        } else {
-          const token = tokens.find((t) => t.address === e.target.value);
-          if (token) setSelectedToken(token);
-        }
+        const token = tokens.find((t) => t.address === e.target.value);
+        if (token) setSelectedToken(token);
       }}
       style={{
         width: '100%',
@@ -115,30 +101,11 @@ function TokenSelector({ viewMode, tokens, selectedToken, setSelectedToken, sele
         backgroundSize: '0.8rem',
       }}
     >
-      {viewMode === 'perps' ? (
-        [
-          'PERP_BTC_USDC',
-          'PERP_ETH_USDC',
-          'PERP_SOL_USDC',
-          'PERP_BNB_USDC',
-          'PERP_XRP_USDC',
-          'PERP_ADA_USDC',
-          'PERP_DOGE_USDC',
-          'PERP_SHIB_USDC',
-          'PERP_AVAX_USDC',
-          'PERP_TRX_USDC',
-        ].map((symbol) => (
-          <option key={symbol} value={symbol}>
-            {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
-          </option>
-        ))
-      ) : (
-        tokens.map((token) => (
-          <option key={token.address} value={token.address}>
-            {token.symbol}/SOL
-          </option>
-        ))
-      )}
+      {tokens.map((token) => (
+        <option key={token.address} value={token.address}>
+          {token.symbol}/SOL
+        </option>
+      ))}
     </select>
   );
 }
@@ -167,7 +134,6 @@ function TradingViewChart({ tokenAddress, isMobile }) {
           left: 0;
           border: 0;
         }
-        /* Overlay to hide DexScreener logo */
         #dexscreener-embed-${tokenAddress}::after {
           content: '';
           position: absolute;
@@ -179,7 +145,6 @@ function TradingViewChart({ tokenAddress, isMobile }) {
           z-index: 10;
           pointer-events: none;
         }
-        /* Hide bottom branding area */
         #dexscreener-embed-${tokenAddress}::before {
           content: '';
           position: absolute;
@@ -193,8 +158,9 @@ function TradingViewChart({ tokenAddress, isMobile }) {
         }
       `}</style>
       <div id={`dexscreener-embed-${tokenAddress}`}>
-        <iframe 
+        <iframe
           src={`https://dexscreener.com/solana/${tokenAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=1&chartType=usd&interval=15`}
+          sandbox="allow-scripts allow-same-origin allow-popups"
         />
       </div>
     </div>
@@ -231,6 +197,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
   const iconStyle = {
     fontSize: '3rem',
     marginBottom: '1rem',
+    color: '#fff',
   };
 
   const viewTxButton = (txid) => {
@@ -244,7 +211,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div style={iconStyle}>{type === 'success' ? '✅' : '❌'}</div>
         <h3 style={{ margin: '0 0 1rem 0', color: type === 'success' ? '#1cc29a' : '#ff4d4f' }}>{title}</h3>
-        <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{message}</p>
+        <p style={{ margin: 0, whiteSpace: 'pre-line', color: '#fff' }}>{message}</p>
         {type === 'success' && txid && (
           <button
             onClick={() => viewTxButton(txid)}
@@ -252,7 +219,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
               marginTop: '1rem',
               padding: '0.5rem 1rem',
               background: '#1cc29a',
-              color: 'white',
+              color: '#fff',
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -267,7 +234,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
           style={{
             padding: '0.5rem 1rem',
             background: type === 'success' ? '#1cc29a' : '#ff4d4f',
-            color: 'white',
+            color: '#fff',
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
@@ -333,7 +300,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
       let inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
       let outputDecimals = side === 'buy' ? selectedToken.decimals || 9 : 9;
-      // Hardcode for USDARK
       if (selectedToken.address === USDARK_CA) {
         inputDecimals = side === 'sell' ? 6 : 9;
         outputDecimals = side === 'buy' ? 6 : 9;
@@ -390,7 +356,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       const inputMint = side === 'buy' ? new PublicKey(SOL_MINT) : new PublicKey(selectedToken.address);
       const outputMint = side === 'buy' ? new PublicKey(selectedToken.address) : new PublicKey(SOL_MINT);
       let inputDecimals = side === 'buy' ? 9 : selectedToken.decimals || 9;
-      // Hardcode for USDARK
       if (selectedToken.address === USDARK_CA) {
         inputDecimals = side === 'sell' ? 6 : 9;
       }
@@ -433,7 +398,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
       });
       await connection.confirmTransaction(txid, 'confirmed');
       setInputAmount('');
-      // Refetch balances
       const fetchBalances = async () => {
         if (wallet.connected && wallet.publicKey) {
           try {
@@ -468,7 +432,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   };
 
   if (!selectedToken) {
-    return <div style={{ padding: '1rem', textAlign: 'center', color: '#999' }}>Select a token to trade</div>;
+    return <div style={{ padding: '1rem', textAlign: 'center', color: '#fff' }}>Select a token to trade</div>;
   }
 
   const inputBalance = side === 'buy' ? balance : tokenBalance;
@@ -503,7 +467,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               border: 'none',
               borderRadius: '4px',
               background: side === 'buy' ? '#1cc29a' : '#2a2a2a',
-              color: 'white',
+              color: '#fff',
               fontWeight: 'bold',
               cursor: 'pointer',
               fontSize: '0.75rem',
@@ -518,7 +482,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               border: 'none',
               borderRadius: '4px',
               background: side === 'sell' ? '#ff4d4f' : '#2a2a2a',
-              color: 'white',
+              color: '#fff',
               fontWeight: 'bold',
               cursor: 'pointer',
               fontSize: '0.75rem',
@@ -529,7 +493,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         </div>
 
         <div style={{ marginBottom: '0.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>
             {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
           </label>
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -564,13 +528,13 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               Max
             </button>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.75rem', color: '#fff', marginTop: '0.25rem' }}>
             Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
           </div>
         </div>
 
         <div style={{ marginBottom: '0.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.75rem', color: '#999', marginBottom: '0.25rem' }}>Slippage %</label>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>Slippage %</label>
           <input
             type="number"
             value={slippage}
@@ -589,10 +553,10 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
           />
         </div>
 
-        {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>Loading quote...</div>}
+        {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#fff', textAlign: 'center' }}>Loading quote...</div>}
         {outputAmount && (
           <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#2a2a2a', borderRadius: '4px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#fff' }}>
               <span>Output:</span>
               <span>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
             </div>
@@ -606,7 +570,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
             width: '100%',
             padding: '0.6rem',
             background: swapButtonColor,
-            color: 'white',
+            color: '#fff',
             border: 'none',
             borderRadius: '4px',
             fontWeight: 'bold',
@@ -627,7 +591,6 @@ function App() {
   const [selectedToken, setSelectedToken] = useState(null);
   const [selectedPerpSymbol, setSelectedPerpSymbol] = useState('PERP_ETH_USDC');
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('spot');
   const [tokenMeta, setTokenMeta] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -674,24 +637,26 @@ function App() {
       try {
         setLoading(true);
         const allTokens = [];
-        const mints = [USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO,  JUP_MINT, JTO_MINT, PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList, LISTNEW, NEWONE, ANOTHERLIST, NEWTOKEN, RAGE];
+        const mints = [
+          USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO, JUP_MINT, JTO_MINT, 
+          PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList, LISTNEW, NEWONE, 
+          ANOTHERLIST, NEWTOKEN, RAGE
+        ];
 
         for (const mint of mints) {
           try {
             const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
             const data = await response.json();
             if (data.pairs && data.pairs.length > 0) {
-              // Filter to only pairs where this mint is the base token
               const basePairs = data.pairs.filter(p => p.baseToken.address === mint);
               if (basePairs.length > 0) {
-                // Prefer SOL or USDC quote pairs
                 const preferredPair = basePairs.find(p => 
                   (p.quoteToken.address === SOL_MINT || p.quoteToken.address === USDC_MINT) && 
                   p.chainId === 'solana' && 
                   p.priceUsd && 
                   parseFloat(p.volume?.h24 || 0) > 0
                 );
-                const pair = preferredPair || basePairs[0]; // Fallback to first base pair
+                const pair = preferredPair || basePairs[0];
                 if (pair) {
                   allTokens.push(pair);
                 }
@@ -714,17 +679,9 @@ function App() {
 
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
 
-        // Ensure USDARK is first
-        const darkIndex = sortedTokens.findIndex(t => t.address === USDARK_CA);
-        if (darkIndex !== -1) {
-          const darkToken = sortedTokens.splice(darkIndex, 1)[0];
-          sortedTokens.unshift(darkToken);
-        }
-
         const enrichedTokens = sortedTokens.map((token) => {
           const meta = tokenMeta.find((m) => m.address === token.address);
           let decimals = meta ? meta.decimals : 9;
-          // Hardcode for USDARK
           if (token.address === USDARK_CA) {
             decimals = 6;
           }
@@ -736,7 +693,11 @@ function App() {
         });
 
         setTokens(enrichedTokens);
-        if (!selectedToken && enrichedTokens.length > 0) setSelectedToken(enrichedTokens[0]);
+        // Only set selectedToken if none is currently selected or if current selection is not in the new token list
+        if (!selectedToken || !enrichedTokens.some(t => t.address === selectedToken.address)) {
+          const darkToken = enrichedTokens.find(t => t.address === USDARK_CA) || enrichedTokens[0];
+          setSelectedToken(darkToken);
+        }
       } catch (error) {
         console.error('Error loading tokens:', error);
       } finally {
@@ -747,7 +708,7 @@ function App() {
     loadTokens();
     const interval = setInterval(loadTokens, 30000);
     return () => clearInterval(interval);
-  }, [tokenMeta]);
+  }, [tokenMeta, selectedToken]);
 
   const formatPrice = (price) => (price < 0.01 ? `$${price.toFixed(6)}` : `$${price.toFixed(2)}`);
   const formatNumber = (num) => {
@@ -823,10 +784,10 @@ function App() {
                   zIndex: 1000,
                 }}
               >
-                <div 
+                <div
                   onClick={copyCA}
-                  style={{ 
-                    fontSize: isMobile ? '0.7rem' : '0.875rem', 
+                  style={{
+                    fontSize: isMobile ? '0.7rem' : '0.875rem',
                     color: '#1cc29a',
                     cursor: 'pointer',
                     textDecoration: 'underline',
@@ -851,23 +812,8 @@ function App() {
                 className="nav-bar"
               >
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold' }}>USDARK-DEX</h1>
+                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <button
-                      onClick={() => setViewMode('spot')}
-                      className="nav-btn"
-                      style={{
-                        padding: '0.4rem 0.8rem',
-                        background: viewMode === 'spot' ? '#333' : 'transparent',
-                        border: 'none',
-                        color: '#fff',
-                        cursor: 'pointer',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                      }}
-                    >
-                      Spot
-                    </button>
                     <button
                       onClick={() => {
                         window.location.href = `https://usdark.trade/perp/${selectedPerpSymbol}/`;
@@ -875,7 +821,7 @@ function App() {
                       className="nav-btn"
                       style={{
                         padding: '0.4rem 0.8rem',
-                        background: viewMode === 'perps' ? '#333' : 'transparent',
+                        background: 'transparent',
                         border: 'none',
                         color: '#fff',
                         cursor: 'pointer',
@@ -885,6 +831,41 @@ function App() {
                     >
                       Perpetuals
                     </button>
+                    <select
+                      value={selectedPerpSymbol}
+                      onChange={(e) => setSelectedPerpSymbol(e.target.value)}
+                      style={{
+                        padding: '0.4rem',
+                        background: '#2a2a2a',
+                        border: '1px solid #333',
+                        borderRadius: '4px',
+                        color: '#fff',
+                        fontSize: '0.75rem',
+                        appearance: 'none',
+                        backgroundImage:
+                          'url("data:image/svg+xml;utf8,<svg fill=\'white\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 0.4rem center',
+                        backgroundSize: '0.8rem',
+                      }}
+                    >
+                      {[
+                        'PERP_BTC_USDC',
+                        'PERP_ETH_USDC',
+                        'PERP_SOL_USDC',
+                        'PERP_BNB_USDC',
+                        'PERP_XRP_USDC',
+                        'PERP_ADA_USDC',
+                        'PERP_DOGE_USDC',
+                        'PERP_SHIB_USDC',
+                        'PERP_AVAX_USDC',
+                        'PERP_TRX_USDC',
+                      ].map((symbol) => (
+                        <option key={symbol} value={symbol}>
+                          {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -895,44 +876,9 @@ function App() {
 
               <div style={mainContainerStyle} className="main-container">
                 <div style={sidebarStyle} className="markets-sidebar">
-                  <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#999' }}>Markets</h3>
+                  <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#fff' }}>Markets</h3>
                   {loading ? (
-                    <div style={{ color: '#999', fontSize: '0.75rem' }}>Loading...</div>
-                  ) : viewMode === 'perps' ? (
-                    [
-                      'PERP_BTC_USDC',
-                      'PERP_ETH_USDC',
-                      'PERP_SOL_USDC',
-                      'PERP_BNB_USDC',
-                      'PERP_XRP_USDC',
-                      'PERP_ADA_USDC',
-                      'PERP_DOGE_USDC',
-                      'PERP_SHIB_USDC',
-                      'PERP_AVAX_USDC',
-                      'PERP_TRX_USDC',
-                    ].map((symbol) => (
-                      <div
-                        key={symbol}
-                        className="token-card"
-                        onClick={() => setSelectedPerpSymbol(symbol)}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem',
-                          marginBottom: '0.5rem',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          background: selectedPerpSymbol === symbol ? '#333' : 'transparent',
-                        }}
-                      >
-                        <div>
-                          <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>
-                            {symbol.replace('PERP_', '').replace('_USDC', '')}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: '#666' }}>Perpetual</div>
-                        </div>
-                      </div>
-                    ))
+                    <div style={{ color: '#fff', fontSize: '0.75rem' }}>Loading...</div>
                   ) : (
                     tokens.map((token) => (
                       <div
@@ -954,12 +900,12 @@ function App() {
                             <img src={token.logoURI} alt={token.symbol} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
                           )}
                           <div>
-                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{token.symbol}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#666' }}>{token.name}</div>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#fff' }}>{token.symbol}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#fff' }}>{token.name}</div>
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '0.875rem' }}>{formatPrice(token.price)}</div>
+                          <div style={{ fontSize: '0.875rem', color: '#fff' }}>{formatPrice(token.price)}</div>
                           <div
                             style={{
                               fontSize: '0.75rem',
@@ -977,12 +923,9 @@ function App() {
                 <div style={mainContentStyle} className="main-content">
                   <div style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
                     <TokenSelector
-                      viewMode={viewMode}
                       tokens={tokens}
                       selectedToken={selectedToken}
                       setSelectedToken={setSelectedToken}
-                      selectedPerpSymbol={selectedPerpSymbol}
-                      setSelectedPerpSymbol={setSelectedPerpSymbol}
                     />
                   </div>
 
@@ -993,15 +936,15 @@ function App() {
                         style={{ padding: isMobile ? '0.5rem' : '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          <h2 style={{ fontSize: '1rem', fontWeight: 'bold' }} className="title-glow">
+                          <h2 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff' }} className="title-glow">
                             {selectedToken.symbol}/SOL
                           </h2>
                           <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Price: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatPrice(selectedToken.price)}</span>
+                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>Price: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatPrice(selectedToken.price)}</span>
                           </div>
                           <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Change: </span>
+                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>24h Change: </span>
                             <span
                               style={{
                                 fontWeight: 'bold',
@@ -1013,17 +956,17 @@ function App() {
                             </span>
                           </div>
                           <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>24h Volume: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.volume24h)}</span>
+                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>24h Volume: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatNumber(selectedToken.volume24h)}</span>
                           </div>
                           <div>
-                            <span style={{ color: '#999', fontSize: '0.75rem' }}>Liquidity: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{formatNumber(selectedToken.liquidity)}</span>
+                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>Liquidity: </span>
+                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatNumber(selectedToken.liquidity)}</span>
                           </div>
                         </div>
                       </div>
                       <div style={chartContainerStyle}>
-                        <TradingViewChart 
+                        <TradingViewChart
                           tokenAddress={selectedToken?.address}
                           isMobile={isMobile}
                         />

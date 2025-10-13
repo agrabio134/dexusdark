@@ -1,27 +1,32 @@
+/* USDARK Social Media Theme - Solana-based, Light Futuristic Style */
+/* Font: Orbitron, monospace; Light gradient background with dark particles and glowing effects, adapted for Solana-based USDARK social platform */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-    font-family: 'Orbitron', monospace !important;
-
+  font-family: 'Orbitron', monospace;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  color: #000000;
 }
 
-span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
-{
-  display: none;
-}
 body {
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
   color: #000000;
-  font-family: 'Orbitron', monospace !important;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.wallet-adapter-modal-title{
+  margin: 0;
   font-family: 'Orbitron', monospace;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+  animation: fadeIn 1s ease-in-out;
+  transition: background 0.5s ease-in-out;
 }
 
+/* Dark particles floating for USDARK social platform */
 .dark-particle {
   position: fixed;
   color: rgba(0, 0, 0, 0.3);
@@ -29,241 +34,504 @@ body {
   pointer-events: none;
   animation: float-dark 15s infinite linear;
   z-index: 0;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes float-dark {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  0% { 
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
   10% { opacity: 1; }
   90% { opacity: 0.8; }
-  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+  100% { 
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
 }
 
-.nav-btn {
-  background: linear-gradient(45deg, #000000ea, #000000ea);
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+#root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
-.nav-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.nav-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.token-card {
-  background: rgba(37, 99, 235, 0.1);
-  border: 2px solid #000000ea;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+/* Story container for USDARK social media posts */
+.story-container {
+  margin-top: 50px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.token-card:hover {
-  background: rgba(37, 99, 235, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.token-card.selected {
-  background: rgba(0, 0, 0, 0.15);
-  border: 3px solid #000000;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-}
-
-.info-box {
-  background: rgba(37, 99, 235, 0.1);
-  border: 2px solid #000000ea;
-  border-radius: 12px;
+  overflow-x: auto;
+  gap: 20px;
   padding: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #f0f0f0;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.story-container::-webkit-scrollbar {
+  height: 10px;
+}
+
+.story-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #000000, #333333);
+  border-radius: 5px;
+}
+
+.story-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 5px;
+}
+
+.story-container > * {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+/* Solana-based container styling */
+.css-eylqgn {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  border: 2px solid #000000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
 }
 
-.title-glow {
+.button_nav_icon {
+  color: #000000 !important;
+  transition: all 0.3s ease;
+}
+
+.button_nav_icon:hover {
+  color: #333333 !important;
+  transform: scale(1.1);
+}
+
+.css-1e93koc {
+  display: none;
+}
+
+.wkit-button {
+  background: linear-gradient(45deg, #000000ea, #333333);
+  width: 150px;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px #dadada;
+  position: relative;
+  overflow: hidden;
+}
+
+.wkit-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wkit-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.wkit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px #dadada;
+}
+
+.css-lpygs4 {
+  color: #000000;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 2px;
   text-shadow: 
-    0 0 10px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(0, 0, 0, 0.4);
+    0 0 10px #939393,
+    0 0 20px #939393,
+    0 0 30px #939393;
   animation: title-glow 2s infinite alternate;
 }
 
 @keyframes title-glow {
-  0% { text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6); }
-  100% { text-shadow: 0 0 15px rgba(0, 0, 0, 1), 0 0 25px rgba(0, 0, 0, 0.8); }
-}
-
-.wallet-adapter-button {
-  background: linear-gradient(45deg, #000000ea, #000000ea) !important;
-  font-family: 'Orbitron', monospace !important;
-}
-
-input {
-  font-family: 'Courier New', monospace;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #000000;
-  border-radius: 4px;
-}
-
-.blur .main-container {
-  filter: blur(5px);
-}
-.portal_container.text-primary-text\/50{
-  display: none !important;
-}
-
-#jupiter-plugin form .flex-col{
-   background-color: #ffffff !important;
-}
-
-/* Mobile Responsive Styles */
-@media (max-width: 1024px) {
-  .main-container {
-    display: flex !important;
-    flex-direction: column;
-    min-height: auto;
+  0% { 
+    text-shadow: 
+      0 0 10px #939393,
+      0 0 20px #939393,
+      0 0 30px #939393;
   }
-
-  .markets-sidebar {
-    display: none;
-  }
-
-  .trading-panel {
-    border-left: none;
-    border-top: 1px solid #262626;
-    max-height: 100vh;
-    overflow-y: auto;
-  }
-
-  .main-content {
-    flex: 1;
-  }
-
-  #tradingview_chart_spot, #tradingview_chart_perps {
-    height: 70vh !important;
-    min-height: 300px;
-  }
-
-  .nav-bar {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .wallet-adapter-button-desktop {
-    display: none;
-  }
-
-  .wallet-icon-button {
-    display: flex;
+  100% { 
+    text-shadow: 
+      0 0 15px #939393,
+      0 0 25px #939393,
+      0 0 35px #939393;
   }
 }
 
-@media (max-width: 768px) {
-  .nav-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.625rem;
+/* Animations for USDARK theme */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
   }
-
-  h1 {
-    font-size: 0.875rem !important;
-  }
-
-  .info-box {
-    padding: 0.5rem;
-  }
-
-  .token-selector {
-    font-size: 0.625rem;
-    padding: 0.4rem;
-    background-size: 0.75rem;
-    background-position: right 0.3rem center;
-  }
-
-  .trading-panel {
-    padding: 0.5rem;
-  }
-
-  input, button {
-    font-size: 0.625rem !important;
-    padding: 0.3rem !important;
-  }
-
-  .info-box > div {
-    gap: 0.25rem !important;
-  }
-
-  .title-glow {
-    font-size: 0.75rem !important;
-  }
-
-  .info-box span {
-    font-size: 0.625rem !important;
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
   }
 }
 
-@media (max-width: 480px) {
-  .nav-btn {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.2rem;
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes pulse {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); 
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); 
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); 
+  }
+}
+
+/* Buttons styled for USDARK social platform */
+.MuiButton-contained {
+  background: linear-gradient(45deg, #000000ea, #333333) !important;
+  color: #ffffff !important;
+  text-transform: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px #dadada;
+}
+
+.MuiButton-contained::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.MuiButton-contained:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.MuiButton-contained:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px #dadada;
+}
+
+.MuiButton-outlined {
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  text-transform: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.MuiButton-outlined:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px #dadada;
+  color: #000000 !important;
+}
+
+/* TextField styled for Solana USDARK */
+.MuiTextField-root .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  border: 2px solid #000000;
+}
+
+.MuiTextField-root .MuiInputLabel-root {
+  color: #333333;
+  font-size: 1.1rem;
+  font-weight: 400;
+  transform: translate(14px, 12px) scale(1);
+}
+
+.MuiTextField-root .MuiInputLabel-shrink {
+  transform: translate(14px, -6px) scale(0.75);
+  color: #000000;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border: 2px solid #000000;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #333333;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #000000;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Avatar for USDARK user profiles */
+.MuiAvatar-root {
+  background: linear-gradient(135deg, #f0f0f0, #ffffff);
+  color: #000000;
+  font-weight: 600;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  border: 2px solid #000000;
+}
+
+.MuiAvatar-root:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  animation: logo-pulse 2s infinite;
+}
+
+@keyframes logo-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+    transform: scale(1.05);
+  }
+}
+
+/* Card for USDARK posts or content */
+.MuiCard-root {
+  background: #dadada;
+  border: 2px solid #000000ea;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.MuiCard-root::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+  transition: all 0.6s ease;
+}
+
+.MuiCard-root:hover::before {
+  left: 100%;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px #dadada;
+  border-color: #000000;
+}
+
+.MuiCard-root.boosted {
+  border: 3px solid #000000 !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  animation: pulse 2s infinite;
+}
+
+/* Solana branding accent for boosted posts */
+.MuiCard-root.solana-boosted {
+  border: 3px solid #000000 !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(51, 51, 51, 0.2));
+  animation: pulse 2s infinite;
+}
+
+/* Responsive layout for mobile and desktop */
+@media (max-width: 600px) {
+  .MuiBox-root[component="main"] {
+    padding: 20px !important;
+    max-width: 100% !important;
   }
 
-  .nav-bar{
-    display: flex;
+  .markets-sidebar{
+    display: none !important;
   }
 
-  h1 {
-    font-size: 0.75rem !important;
+  .MuiBox-root[component="main"] > * {
+    width: 100%;
   }
 
-  .token-selector {
-    font-size: 0.5rem;
-    padding: 0.3rem;
-    background-size: 0.6rem;
-    background-position: right 0.2rem center;
+  .MuiAppBar-root {
+    padding: 0 20px;
   }
 
-  .trading-panel {
-    height: 100vh;
+  .MuiButton-contained, .MuiButton-outlined {
+    padding: 10px 16px;
+    font-size: 1rem;
   }
 
-  .info-box {
-    padding: 0.4rem;
+  .story-container {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+@media (min-width: 960px) {
+  .MuiBox-root[component="main"] {
+    max-width: 640px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
-  .title-glow {
-    font-size: 0.625rem !important;
+  .MuiBox-root[component="aside"] {
+    width: 280px;
+    position: fixed;
+    top: 80px;
   }
+}
 
-  .info-box span {
-    font-size: 0.5rem !important;
-  }
+/* Typography for USDARK social content */
+.MuiTypography-root {
+  color: #000000 !important;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+}
 
-  .wallet-icon-button svg {
-    width: 20px;
-    height: 20px;
-  }
+.MuiTypography-h5, .MuiTypography-h6 {
+  font-weight: 900 !important;
+  font-size: 1.5rem !important;
+  letter-spacing: 2px;
+}
+
+.MuiTypography-subtitle1 {
+  font-weight: 700 !important;
+  font-size: 1.2rem !important;
+}
+
+.MuiTypography-caption, .MuiTypography-body2 {
+  color: #333333 !important;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: 0.9rem !important;
+}
+
+/* Icon buttons for social interactions */
+.MuiIconButton-root {
+  color: #333333;
+  transition: all 0.3s ease;
+}
+
+.MuiIconButton-root:hover {
+  color: #000000;
+  transform: scale(1.1);
+}
+
+/* AppBar for USDARK social platform */
+.MuiAppBar-root {
+  background: linear-gradient(90deg, #ffffff, #f0f0f0) !important;
+  border-bottom: 2px solid #000000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* BottomNavigation for USDARK navigation */
+.MuiBottomNavigation-root {
+  background: linear-gradient(90deg, #ffffff, #f0f0f0) !important;
+  border-top: 2px solid #000000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.MuiBottomNavigationAction-root {
+  transition: all 0.3s ease;
+  color: #333333;
+}
+
+.MuiBottomNavigationAction-root.Mui-selected {
+  color: #000000 !important;
+  font-weight: 700;
+}
+
+.MuiBottomNavigationAction-root:hover {
+  color: #000000 !important;
+  transform: scale(1.1);
+}
+
+/* CircularProgress for loading states */
+.MuiCircularProgress-root {
+  color: #000000 !important;
+  animation: pulse 1.5s infinite;
+}
+
+/* Snackbar for notifications */
+.MuiSnackbarContent-root {
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  background-color: #dadada !important;
+  color: #000000 !important;
+  border: 2px solid #000000ea;
+}
+
+/* Modal for USDARK interactions (e.g., post sharing, wallet connect) */
+.MuiModal-root .MuiBox-root {
+  backdrop-filter: blur(10px);
+  border: 2px solid #000000ea;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: #dadada;
+  border-radius: 12px;
+  animation: fadeIn 0.3s;
+}
+
+.MuiModal-root {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Solana-specific branding for USDARK social platform */
+.solana-branding {
+  background: linear-gradient(45deg, #000000ea, #333333);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  animation: badge-flicker 1.5s infinite;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+@keyframes badge-flicker {
+  0%, 90%, 100% { opacity: 1; }
+  5%, 85% { opacity: 0.8; }
 }
