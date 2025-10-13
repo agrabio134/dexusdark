@@ -102,7 +102,7 @@ function TokenSelector({ tokens, selectedToken, setSelectedToken }) {
       }}
     >
       {tokens.map((token) => (
-        <option key={token.address} value={token.address}>
+        <option key={token.address} value={token.address} style={{color: '#fff'}}>
           {token.symbol}/SOL
         </option>
       ))}
