@@ -103,7 +103,7 @@ function TokenSelector({ tokens, selectedToken, setSelectedToken }) {
       }}
     >
       {tokens.map((token) => (
-        <option key={token.address} value={token.address} style={{color: '#fff'}}>
+        <option key={token.address} value={token.address} style={{ color: '#fff' }}>
           {token.symbol}/SOL
         </option>
       ))}
@@ -639,8 +639,8 @@ function App() {
         setLoading(true);
         const allTokens = [];
         const mints = [
-          USDARK_CA,  XBT, DEEP,  JUP_MINT, JTO_MINT, 
-          PUMP_MINT, USDC_MINT,  PANDU, PFP, newList, LISTNEW, NEWONE, 
+          USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
+          PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
           ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY
         ];
 
@@ -651,10 +651,10 @@ function App() {
             if (data.pairs && data.pairs.length > 0) {
               const basePairs = data.pairs.filter(p => p.baseToken.address === mint);
               if (basePairs.length > 0) {
-                const preferredPair = basePairs.find(p => 
-                  (p.quoteToken.address === SOL_MINT || p.quoteToken.address === USDC_MINT) && 
-                  p.chainId === 'solana' && 
-                  p.priceUsd && 
+                const preferredPair = basePairs.find(p =>
+                  (p.quoteToken.address === SOL_MINT || p.quoteToken.address === USDC_MINT) &&
+                  p.chainId === 'solana' &&
+                  p.priceUsd &&
                   parseFloat(p.volume?.h24 || 0) > 0
                 );
                 const pair = preferredPair || basePairs[0];
@@ -800,44 +800,69 @@ function App() {
 <div
   style={{
     borderBottom: '1px solid #262626',
-    padding: '0.5rem 1rem',
+    padding: '0.5rem 0rem',
     display: 'flex',
     alignItems: 'center',
     background: '#1a1a1a',
     color: '#fff',
-    flexWrap: 'nowrap',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
     position: 'sticky',
-    top: '40px', // sits right under your main nav
+    top: '40px',
     zIndex: 900,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
     fontSize: '0.95rem',
     fontWeight: 500,
     gap: '0.5rem',
   }}
   className="ads-bar"
 >
-  🔥 Trending : <span style={{ color: '#00ff9d', fontWeight: 600 }}>$PFP 🏴 PUMP FUN PEPE 🏴</span>
+  <span style={{ flexShrink: 0,  color: '#fff',fontWeight: 500, background: '#1a1a1a',  zIndex: 900, paddingLeft: 10}}>🔥 Trending :</span>
+
+  <div
+    style={{
+      display: 'inline-block',
+      marginLeft: '0.5rem',
+      animation: 'scroll-left 12s linear infinite',
+    }}
+  >
+    <span style={{ color: '#00ff9d', fontWeight: 600 }}>
+      $PFP 🏴 PUMP FUN PEPE 🏴
+    </span>
+  </div>
+
+  <style>
+    {`
+      @keyframes scroll-left {
+        from { transform: translateX(100%); }
+        to { transform: translateX(-100%); }
+      }
+
+      .ads-bar div:hover {
+        animation-play-state: paused; /* optional: pause on hover */
+      }
+    `}
+  </style>
 </div>
 
 
+
               <div
-                  style={{
-                    borderBottom: '1px solid #262626',
-                    padding: '0.75rem 1rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    background: '#1a1a1a',
-                    flexWrap: 'nowrap',   // ✅ force all items on one line
-                    whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
-                    overflow: 'hidden',   // optional: hides overflow
-                    position: 'sticky',
-                    top: '40px',
-                    zIndex: 900,
-                  }}
-                  className="nav-bar"
-               >
+                style={{
+                  borderBottom: '1px solid #262626',
+                  padding: '0.75rem 1rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: '#1a1a1a',
+                  flexWrap: 'nowrap',   // ✅ force all items on one line
+                  whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
+                  overflow: 'hidden',   // optional: hides overflow
+                  position: 'sticky',
+                  top: '40px',
+                  zIndex: 900,
+                }}
+                className="nav-bar"
+              >
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
                   <h1 style={{ fontSize: isMobile ? '0.85rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
@@ -895,8 +920,8 @@ function App() {
                     </select> */}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0}} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0 }} />
                   <WalletIconButton />
                 </div>
               </div>
