@@ -798,23 +798,25 @@ function App() {
                 </div>
               </div>
               <div
-                style={{
-                  borderBottom: '1px solid #262626',
-                  padding: '0.75rem 1rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: '#1a1a1a',
-                  flexWrap: 'wrap',
-                  position: 'sticky',
-                  top: '40px',
-                  zIndex: 900,
-                }}
+  style={{
+    borderBottom: '1px solid #262626',
+    padding: '0.75rem 1rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: '#1a1a1a',
+    flexWrap: 'nowrap',   // ✅ force all items on one line
+    whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
+    overflow: 'hidden',   // optional: hides overflow
+    position: 'sticky',
+    top: '40px',
+    zIndex: 900,
+  }}
                 className="nav-bar"
               >
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'start', flexWrap: 'no-wrap' }}>
+                  <h1 style={{ fontSize: isMobile ? '0.85rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
+                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
                       onClick={() => {
                         window.location.href = `https://usdark.trade/perp/${selectedPerpSymbol}/`;
@@ -827,7 +829,7 @@ function App() {
                         color: '#fff',
                         cursor: 'pointer',
                         borderRadius: '4px',
-                        fontSize: '0.75rem',
+                        fontSize: '0.65rem',
                       }}
                     >
                       Perpetuals
@@ -870,7 +872,7 @@ function App() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{backgroundColor: 'rgba(28, 194, 155, 0)'}} />
+                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0}} />
                   <WalletIconButton />
                 </div>
               </div>
