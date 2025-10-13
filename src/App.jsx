@@ -27,7 +27,7 @@ const LISTNEW = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
 const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
 const ANOTHERLIST = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
 const NEWTOKEN = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
-const RAGE = 'G3FoXHoQDuGkEG8ZqQd7riC9uB1N51bg7JuxJEPNpump';
+const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
 
 class ErrorBoundary extends Component {
