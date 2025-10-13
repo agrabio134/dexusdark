@@ -7,7 +7,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Orbitron', monospace;
+  font-family: 'Orbitron', monospace !important;
   font-weight: 400;
   font-style: normal;
   line-height: 1.5;
@@ -18,7 +18,7 @@ body {
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
   color: #000000;
   margin: 0;
-  font-family: 'Orbitron', monospace;
+  font-family: 'Orbitron', monospace !important;
   overflow-x: hidden;
   min-height: 100vh;
   position: relative;
