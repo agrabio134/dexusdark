@@ -12,7 +12,7 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #1cc29a);
+  filter: drop-shadow(0 0 2em #646cffaa);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
@@ -23,10 +23,6 @@
 span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
 {
   display: none;
-}
-
-.wallet-adapter-button-trigger{
-  color: #1cc29a !important;
 }
 @keyframes logo-spin {
   from {

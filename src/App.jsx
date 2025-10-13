@@ -14,12 +14,12 @@ const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
 const JUP_MINT = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
 const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
 const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
-const WATER_MINT = 'FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump';
-const SSX = '2EyNf2PCNT7eQ9ag1RDXw3qn3Cy22WdTA9T6HKDebonk';
+// const WATER_MINT = 'FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump';
+// const SSX = '2EyNf2PCNT7eQ9ag1RDXw3qn3Cy22WdTA9T6HKDebonk';
 const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
 const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
-const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
-const ONE = 'F8YifePrXyE6VJw9bZChc2sJqLNK9h9q2MwCgP2Upump';
+// const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
+// const ONE = 'F8YifePrXyE6VJw9bZChc2sJqLNK9h9q2MwCgP2Upump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
@@ -639,8 +639,8 @@ function App() {
         setLoading(true);
         const allTokens = [];
         const mints = [
-          USDARK_CA, WATER_MINT, SSX, XBT, DEEP, ZERO, JUP_MINT, JTO_MINT, 
-          PUMP_MINT, USDC_MINT, ONE, PANDU, PFP, newList, LISTNEW, NEWONE, 
+          USDARK_CA,  XBT, DEEP,  JUP_MINT, JTO_MINT, 
+          PUMP_MINT, USDC_MINT,  PANDU, PFP, newList, LISTNEW, NEWONE, 
           ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY
         ];
 
@@ -832,7 +832,7 @@ function App() {
                     >
                       Perpetuals
                     </button>
-                    <select
+                    {/* <select
                       value={selectedPerpSymbol}
                       onChange={(e) => setSelectedPerpSymbol(e.target.value)}
                       style={{
@@ -866,18 +866,18 @@ function App() {
                           {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
                         </option>
                       ))}
-                    </select>
+                    </select> */}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <WalletMultiButton className="wallet-adapter-button-desktop" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{backgroundColor: 'rgba(28, 194, 155, 0)'}} />
                   <WalletIconButton />
                 </div>
               </div>
 
               <div style={mainContainerStyle} className="main-container">
                 <div style={sidebarStyle} className="markets-sidebar">
-                  <h3 style={{ fontSize: '0.875rem', marginBottom: '1rem', color: '#fff' }}>Markets</h3>
+                  <h3 style={{ fontSize: '0.675rem', marginBottom: '1rem', color: '#fff' }}>Markets</h3>
                   {loading ? (
                     <div style={{ color: '#fff', fontSize: '0.75rem' }}>Loading...</div>
                   ) : (
