@@ -791,12 +791,13 @@ function App() {
                     fontSize: isMobile ? '0.7rem' : '0.875rem',
                     color: '#1cc29a',
                     cursor: 'pointer',
-                    textDecoration: 'underline',
+                    
                     fontWeight: '800',
                   }}
                 >
                   <span  style={{
-                   fontWeight: '600',
+                   fontWeight: '400',
+                   textDecoration: 'none',
                     color: '#ffffffff'}}>CA:</span> {USDARK_CA}
                 </div>
               </div>
