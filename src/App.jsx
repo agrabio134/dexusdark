@@ -826,7 +826,7 @@ function App() {
     }}
   >
     <span style={{ color: '#00ff9d', fontWeight: 600 }}>
-      $PFP 🏴 PUMP FUN PEPE 🏴
+      🥇 $PFP 🥈 $LENNY 🥉 $XBT 🏅 $USDARK
     </span>
   </div>
 
