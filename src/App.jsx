@@ -792,9 +792,12 @@ function App() {
                     color: '#1cc29a',
                     cursor: 'pointer',
                     textDecoration: 'underline',
+                    fontWeight: '800',
                   }}
                 >
-                  CA: {USDARK_CA}
+                  <span  style={{
+                   fontWeight: '600',
+                    color: '#ffffffff'}}>CA:</span> {USDARK_CA}
                 </div>
               </div>
 <div
