@@ -589,6 +589,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
 function App() {
   const [tokens, setTokens] = useState([]);
+  const [trendingTokens, setTrendingTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(null);
   const [selectedPerpSymbol, setSelectedPerpSymbol] = useState('PERP_ETH_USDC');
   const [loading, setLoading] = useState(true);
@@ -694,6 +695,14 @@ function App() {
         });
 
         setTokens(enrichedTokens);
+
+        // Compute top gainers for trending
+        const topGainers = enrichedTokens
+          .filter(t => t.priceChange24h > 0) // Only positive gains
+          .sort((a, b) => b.priceChange24h - a.priceChange24h)
+          .slice(0, 4);
+        setTrendingTokens(topGainers);
+
         // Only set selectedToken if none is currently selected or if current selection is not in the new token list
         if (!selectedToken || !enrichedTokens.some(t => t.address === selectedToken.address)) {
           const darkToken = enrichedTokens.find(t => t.address === USDARK_CA) || enrichedTokens[0];
@@ -717,6 +726,8 @@ function App() {
     if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
     return `$${(num / 1e3).toFixed(2)}K`;
   };
+
+  const medals = ['🥇', '🥈', '🥉', '🏅'];
 
   const mainContainerStyle = {
     display: 'grid',
@@ -791,51 +802,56 @@ function App() {
                     fontSize: isMobile ? '0.7rem' : '0.875rem',
                     color: '#1cc29a',
                     cursor: 'pointer',
-                    
+
                     fontWeight: '800',
                   }}
                 >
-                  <span  style={{
-                   fontWeight: '500',
-                   textDecoration: 'none',
-                    color: '#ffffffff'}}>CA :</span> {USDARK_CA}
+                  <span style={{
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    color: '#ffffffff'
+                  }}>CA :</span> {USDARK_CA}
                 </div>
               </div>
-<div
-  style={{
-    borderBottom: '1px solid #262626',
-    padding: '0.5rem 0rem',
-    display: 'flex',
-    alignItems: 'center',
-    background: '#1a1a1a',
-    color: '#fff',
-    position: 'sticky',
-    top: '40px',
-    zIndex: 900,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    fontSize: '0.95rem',
-    fontWeight: 500,
-    gap: '0.5rem',
-  }}
-  className="ads-bar"
->
-  <span style={{ flexShrink: 0,  color: '#fff',fontWeight: 500, background: '#1a1a1a',  zIndex: 900, paddingLeft: 10}}>🔥 Trending :</span>
+              <div
+                style={{
+                  borderBottom: '1px solid #262626',
+                  padding: '0.5rem 0rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  background: '#1a1a1a',
+                  color: '#fff',
+                  position: 'sticky',
+                  top: '40px',
+                  zIndex: 900,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  gap: '0.5rem',
+                }}
+                className="ads-bar"
+              >
+                <span style={{ flexShrink: 0, color: '#fff', fontWeight: 500, background: '#1a1a1a', zIndex: 900, paddingLeft: 10 }}>🔥 Trending :</span>
 
-  <div
-    style={{
-      display: 'inline-block',
-      marginLeft: '0.5rem',
-      animation: 'scroll-left 12s linear infinite',
-    }}
-  >
-    <span style={{ color: '#00ff9d', fontWeight: 600 }}>
-      🥇 $PFP 🥈 $LENNY 🥉 $XBT 🏅 $USDARK
-    </span>
-  </div>
+                <div
+                  style={{
+                    display: 'inline-block',
+                    marginLeft: '0.5rem',
+                    animation: 'scroll-left 12s linear infinite',
+                  }}
+                >
+                  <span style={{ color: '#00ff9d', fontWeight: 600 }}>
+                    {trendingTokens.map((token, index) => (
+                      <span key={token.address} style={{ color: '#00ff9d', fontWeight: 600 }}>
+                        {medals[index]} ${token.symbol} + {token.priceChange24h.toFixed(2)}%
+                      </span>
+                    )).reduce((prev, curr) => prev ? [prev, ' ', curr] : curr, null)}
+                  </span>
+                </div>
 
-  <style>
-    {`
+                <style>
+                  {`
       @keyframes scroll-left {
         from { transform: translateX(100%); }
         to { transform: translateX(-100%); }
@@ -845,8 +861,8 @@ function App() {
         animation-play-state: paused; /* optional: pause on hover */
       }
     `}
-  </style>
-</div>
+                </style>
+              </div>
 
 
 
