@@ -797,7 +797,7 @@ function App() {
                 >
                   <span  style={{
                    fontWeight: '600',
-                    color: '#ffffffff'}}>CA:</span> {USDARK_CA}
+                    color: '#ffffffff'}}>CA :</span> {USDARK_CA}
                 </div>
               </div>
 <div
