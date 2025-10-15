@@ -19,7 +19,7 @@ const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
 const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
 const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
 // const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
-// const ONE = 'F8YifePrXyE6VJw9bZChc2sJqLNK9h9q2MwCgP2Upump';
+const Starecat = '7MiLCuSZfLoTAK7S7CztrLV75kC3rfJULEmDNUx5pump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
@@ -642,7 +642,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
-          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY
+          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat
         ];
 
         for (const mint of mints) {
