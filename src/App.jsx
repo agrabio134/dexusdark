@@ -31,7 +31,7 @@ const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
 
 
-cont NEWLIST1 = 'S5HCZCtRjnSvnfubiaNEsCLU9Dw9gcFLx4uF4Dypump';
+const NEWLIST1 = 'S5HCZCtRjnSvnfubiaNEsCLU9Dw9gcFLx4uF4Dypump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
