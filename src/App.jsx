@@ -30,6 +30,9 @@ const NEWTOKEN = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
 
+
+cont NEWLIST1 = 'S5HCZCtRjnSvnfubiaNEsCLU9Dw9gcFLx4uF4Dypump';
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
@@ -642,7 +645,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
-          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat
+          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1
         ];
 
         for (const mint of mints) {
