@@ -29,12 +29,9 @@ const ANOTHERLIST = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
 const NEWTOKEN = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
-
-
 const NEWLIST1 = 'S5HCZCtRjnSvnfubiaNEsCLU9Dw9gcFLx4uF4Dypump';
-
-
 const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
+const GEMONEY = '7nwZPuUta14fychwr5BoyWHQB9adxCfwxEXdjWPhGGGG';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -648,7 +645,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
-          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1, SERIOUSCAT
+          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1, SERIOUSCAT, GEMONEY
         ];
 
         for (const mint of mints) {
