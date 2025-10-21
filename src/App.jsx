@@ -34,6 +34,8 @@ const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
 const PINHEAD = '6mgqeeGHE5GrVk9fYdeJSjKTFZV1TVNAQTMYdHjfpump';
 const ALCH = 'WXsX5HSoVquYRGuJXJrCSogT1M6nZiPRrfZhQsPcXAU';
 
+const NEWLISTING_1 = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
@@ -646,7 +648,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
-          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1, SERIOUSCAT, PINHEAD, ALCH
+          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1, SERIOUSCAT, PINHEAD, ALCH, NEWLISTING_1
         ];
 
         for (const mint of mints) {
