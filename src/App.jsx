@@ -14,27 +14,22 @@ const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
 const JUP_MINT = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
 const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
 const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
-// const WATER_MINT = 'FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump';
-// const SSX = '2EyNf2PCNT7eQ9ag1RDXw3qn3Cy22WdTA9T6HKDebonk';
 const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
 const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
-// const ZERO = 'AA8nmXa7fwfYjYtKEaKwkcCKJL5UmkvXYXE7NVmspump';
 const Starecat = '7MiLCuSZfLoTAK7S7CztrLV75kC3rfJULEmDNUx5pump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
-const newList = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
-const LISTNEW = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
-const NEWONE = '2f6KPSCVdn5qaGjx96UnzMVHThAqDFuNKrfYcffdpump';
-const ANOTHERLIST = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
-const NEWTOKEN = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
+const FSJAL = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
+const ALPHA = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
+const TARIFCOIN = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
+const LENNY = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
-const NEWLIST1 = 'S5HCZCtRjnSvnfubiaNEsCLU9Dw9gcFLx4uF4Dypump';
 const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
 const PINHEAD = '6mgqeeGHE5GrVk9fYdeJSjKTFZV1TVNAQTMYdHjfpump';
 const ALCH = 'WXsX5HSoVquYRGuJXJrCSogT1M6nZiPRrfZhQsPcXAU';
 
-const NEWLISTING_1 = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
+const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -647,8 +642,8 @@ function App() {
         const allTokens = [];
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
-          PUMP_MINT, USDC_MINT, PANDU, PFP, newList, LISTNEW, NEWONE,
-          ANOTHERLIST, NEWTOKEN, RAGE, FOURTWENTY, Starecat,NEWLIST1, SERIOUSCAT, PINHEAD, ALCH, NEWLISTING_1
+          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
+          TARIFCOIN, LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PINHEAD, ALCH, PLX
         ];
 
         for (const mint of mints) {
