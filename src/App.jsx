@@ -31,6 +31,9 @@ const ALCH = 'WXsX5HSoVquYRGuJXJrCSogT1M6nZiPRrfZhQsPcXAU';
 
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 
+const STUPID = 
+'EYzxWJz2vYN97CYAxNLHJ8moV8Z2JCK9mBSj5HsGpump';
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
@@ -643,7 +646,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-          TARIFCOIN, LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PINHEAD, ALCH, PLX
+          TARIFCOIN, LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PINHEAD, ALCH, PLX, STUPID
         ];
 
         for (const mint of mints) {
