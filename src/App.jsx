@@ -20,13 +20,11 @@ const Starecat = '7MiLCuSZfLoTAK7S7CztrLV75kC3rfJULEmDNUx5pump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const FSJAL = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
-const ALPHA = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
-const TARIFCOIN = '51aXwxgrWKRXJGwWVVgE3Jrs2tWKhuNadfsEt6j2pump';
+
 const LENNY = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
-const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
-const PINHEAD = '6mgqeeGHE5GrVk9fYdeJSjKTFZV1TVNAQTMYdHjfpump';
+
 const ALCH = 'WXsX5HSoVquYRGuJXJrCSogT1M6nZiPRrfZhQsPcXAU';
 const POLYMI = 'HygZx5u3aaXg38grfa39Y59NSGFQXSMCUyAYWoZfpump';
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
@@ -35,6 +33,9 @@ const STUPID =
 'EYzxWJz2vYN97CYAxNLHJ8moV8Z2JCK9mBSj5HsGpump';
 
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
+
+
+const LUMEN = 'BkpaxHhE6snExazrPkVAjxDyZa8Nq3oDEzm5GQm2pump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -647,8 +648,7 @@ function App() {
         const allTokens = [];
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
-          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-          TARIFCOIN, LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PINHEAD, ALCH, PLX, STUPID, SONIAN, POLYMI
+          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, LENNY, RAGE, FOURTWENTY, Starecat,  ALCH, PLX, STUPID, SONIAN, POLYMI, LUMEN
         ];
 
         for (const mint of mints) {
