@@ -911,7 +911,7 @@ function App() {
                     </button>
                       <button
                       onClick={() => {
-                        window.location.href = 'https://usdark.fun';
+                        window.location.href = '#';
                       }}
                       className="nav-btn"
                       style={{
