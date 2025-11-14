@@ -909,6 +909,23 @@ function App() {
                     >
                       Perpetuals
                     </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = 'https://usdark.fun';
+                      }}
+                      className="nav-btn"
+                      style={{
+                        padding: '0.4rem 0.8rem',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        fontSize: '0.65rem',
+                      }}
+                    >
+                      USDARK PAD
+                    </button>
                     {/* <select
                       value={selectedPerpSymbol}
                       onChange={(e) => setSelectedPerpSymbol(e.target.value)}
