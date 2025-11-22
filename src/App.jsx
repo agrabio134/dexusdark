@@ -648,7 +648,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-          TARIFCOIN, LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PINHEAD, ALCH, PLX, STUPID, SONIAN, POLYMI
+           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI
         ];
 
         for (const mint of mints) {
