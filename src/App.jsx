@@ -34,7 +34,6 @@ const TIKTOK = 'DL6BBBQ6heTg9Zr5gFZxsCK2AZt2aVyRqUZgChqopump';
 
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
 
-const NEWL = 'B7sn8nJZtGSQzR7dUwSuLALGWMG16PmASRTqC2Pspump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
@@ -648,7 +647,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI, TIKTOK,NEWL
+           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI, TIKTOK
         ];
 
         for (const mint of mints) {
