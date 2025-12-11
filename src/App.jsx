@@ -30,11 +30,10 @@ const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
 const POLYMI = 'HygZx5u3aaXg38grfa39Y59NSGFQXSMCUyAYWoZfpump';
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 
-const TIKTOK = 'DL6BBBQ6heTg9Zr5gFZxsCK2AZt2aVyRqUZgChqopump';
 
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
 
-const NEWLISTSS = 'EcMzzinq67zZmxxxAcSSvCuRVfabdyE4jRMxxzqPgVfz' ;
+const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP' ;
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
