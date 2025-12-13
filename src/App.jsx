@@ -35,6 +35,8 @@ const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
 
 const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP' ;
 
+const ENGRAVE = 'ADMiFUmFUz3tzLozh7yTy2zWe1soM61aE995TZqLpump';
+
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
 
@@ -647,7 +649,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI, NEWLISTSS
+           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI, NEWLISTSS, ENGRAVE
         ];
 
         for (const mint of mints) {
