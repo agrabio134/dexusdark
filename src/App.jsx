@@ -27,7 +27,7 @@ const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
 const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
 
-const POLYMI = 'HygZx5u3aaXg38grfa39Y59NSGFQXSMCUyAYWoZfpump';
+
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 
 
@@ -653,7 +653,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, POLYMI, NEWLISTSS, ENGRAVE, JOBS ,WURK
+           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, NEWLISTSS, ENGRAVE, JOBS ,WURK
         ];
 
 
