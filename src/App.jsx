@@ -39,7 +39,7 @@ const ENGRAVE = 'ADMiFUmFUz3tzLozh7yTy2zWe1soM61aE995TZqLpump';
 
 const JOBS = '6cNcXWqYvK9nhD1TsjJ1ZH1KATXcaPaRJtZPHyVkJoBs';
 
-cons WURK = 'ALR5X2H6THn2VDPoMtkVwxVktcN1kQGvxCwLfejzpump';
+const WURK = 'ALR5X2H6THn2VDPoMtkVwxVktcN1kQGvxCwLfejzpump';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
