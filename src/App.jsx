@@ -16,7 +16,6 @@ const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
 const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
 const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
 const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
-const Starecat = 'AM12BcwgeWYk8XRahHyKC8pJqtPhR1f1hJb6nMQPpump';
 const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const FSJAL = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
@@ -647,13 +646,23 @@ function App() {
 
   useEffect(() => {
     const loadTokens = async () => {
+
+
+
+
+
+
+
+
+
+      
       try {
         setLoading(true);
         const allTokens = [];
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-           LENNY, RAGE, FOURTWENTY, Starecat, SERIOUSCAT, PLX, SONIAN, NEWLISTSS, ENGRAVE, JOBS ,WURK
+           LENNY, RAGE, FOURTWENTY, SERIOUSCAT, PLX, SONIAN, NEWLISTSS, ENGRAVE, JOBS ,WURK
         ];
 
 
