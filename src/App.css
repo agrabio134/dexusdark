@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  
 }
 
 .logo {
@@ -48,3 +49,5 @@ span.text-primary-text\/50.text-xs.p-2.flex-row.flex.gap-1.justify-center
 .read-the-docs {
   color: #888;
 }
+
+

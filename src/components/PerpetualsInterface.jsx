@@ -14,7 +14,7 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
+        <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
           <h3>Error in Perpetuals Trading</h3>
           <p>{this.state.errorMessage}</p>
           <p>Please try refreshing the page or switching to Spot trading mode.</p>

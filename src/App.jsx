@@ -32,7 +32,7 @@ const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
 
-const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP' ;
+const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP';
 
 const ENGRAVE = 'ADMiFUmFUz3tzLozh7yTy2zWe1soM61aE995TZqLpump';
 
@@ -55,7 +55,7 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
+        <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
           <h3>Error in Application</h3>
           <p>{this.state.errorMessage}</p>
           <p>Please try refreshing the page.</p>
@@ -104,7 +104,7 @@ function TokenSelector({ tokens, selectedToken, setSelectedToken }) {
       style={{
         width: '100%',
         padding: '0.4rem',
-        background: '#2a2a2a',
+        background: '#1d1d22',
         border: '1px solid #333',
         borderRadius: '4px',
         color: '#fff',
@@ -200,7 +200,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
   };
 
   const contentStyle = {
-    background: '#1a1a1a',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
     borderRadius: '8px',
     padding: '2rem',
     maxWidth: '400px',
@@ -474,15 +474,15 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         message={modalMessage}
         type="error"
       />
-      <div style={{ background: '#1a1a1a', borderRadius: '8px', padding: '0.75rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
+      <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', borderRadius: '8px', padding: '0.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
           <button
             onClick={() => { setSide('buy'); setInputAmount(''); }}
             style={{
               padding: '0.4rem',
               border: 'none',
               borderRadius: '4px',
-              background: side === 'buy' ? '#1cc29a' : '#2a2a2a',
+              background: side === 'buy' ? '#1cc29a' : '#1d1d22',
               color: '#fff',
               fontWeight: 'bold',
               cursor: 'pointer',
@@ -497,7 +497,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               padding: '0.4rem',
               border: 'none',
               borderRadius: '4px',
-              background: side === 'sell' ? '#ff4d4f' : '#2a2a2a',
+              background: side === 'sell' ? '#ff4d4f' : '#1d1d22',
               color: '#fff',
               fontWeight: 'bold',
               cursor: 'pointer',
@@ -520,19 +520,21 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               placeholder="0.0"
               style={{
                 flex: 1,
-                padding: '0.4rem',
-                background: '#2a2a2a',
+
+                padding: '0.4rem 0.8rem',
+                background: '#1d1d22',
                 border: '1px solid #333',
                 borderRadius: '4px 0 0 4px',
                 color: '#fff',
-                fontSize: '0.875rem',
+                fontSize: '0.75rem',
+                marginRight: '5px',
               }}
             />
             <button
               onClick={handleMax}
               style={{
                 padding: '0.4rem 0.8rem',
-                background: '#333',
+                background: '#1d1d22',
                 border: '1px solid #333',
                 color: '#fff',
                 borderLeft: 'none',
@@ -560,7 +562,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
             style={{
               width: '100%',
               padding: '0.4rem',
-              background: '#2a2a2a',
+              background: '#1d1d22',
               border: '1px solid #333',
               borderRadius: '4px',
               color: '#fff',
@@ -571,10 +573,10 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
 
         {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#fff', textAlign: 'center' }}>Loading quote...</div>}
         {outputAmount && (
-          <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#2a2a2a', borderRadius: '4px' }}>
+          <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#1d1d22', borderRadius: '4px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#fff' }}>
-              <span>Output:</span>
-              <span>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
+              <span style={{color: '#fff', backgroundColor: '#00000000'  }}>Output:</span>
+              <span style={{color: '#fff', backgroundColor: '#00000000', fontWeight: 'bold' }}>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
             </div>
           </div>
         )}
@@ -660,14 +662,14 @@ function App() {
 
 
 
-      
+
       try {
         setLoading(true);
         const allTokens = [];
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
-          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA, 
-           LENNY, RAGE, FOURTWENTY, SERIOUSCAT,  NEWLISTSS, ENGRAVE, JOBS ,WURK,LC_SHIB, PUMP2
+          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
+          LENNY, RAGE, FOURTWENTY, SERIOUSCAT, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
         ];
 
 
@@ -786,7 +788,7 @@ function App() {
 
   const sidebarStyle = {
     gridArea: 'sidebar',
-    background: '#1a1a1a',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
     borderRight: isMobile ? 'none' : '1px solid #262626',
     overflowY: 'auto',
     padding: isMobile ? '0.5rem' : '1rem',
@@ -795,11 +797,12 @@ function App() {
 
   const tradeStyle = {
     gridArea: 'trade',
-    background: '#1a1a1a',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
     borderLeft: isMobile ? 'none' : '1px solid #262626',
     padding: isMobile ? '0.5rem' : '0.75rem',
     overflowY: isMobile ? 'visible' : 'auto',
     width: '100%',
+fontFamily: "'Orbitron', 'Inter', sans-serif",
   };
 
   return (
@@ -817,7 +820,7 @@ function App() {
             >
               <div
                 style={{
-                  background: '#1a1a1a',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
                   padding: '0.5rem 1rem',
                   textAlign: 'center',
                   borderBottom: '1px solid #262626',
@@ -849,7 +852,7 @@ function App() {
                   padding: '0.5rem 0rem',
                   display: 'flex',
                   alignItems: 'center',
-                  background: '#1a1a1a',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
                   color: '#fff',
                   position: 'sticky',
                   top: '40px',
@@ -862,7 +865,7 @@ function App() {
                 }}
                 className="ads-bar"
               >
-                <span style={{ flexShrink: 0, color: '#fff', fontWeight: 500, background: '#1a1a1a', zIndex: 900, paddingLeft: 10 }}>🔥 Trending :</span>
+                <span style={{ flexShrink: 0, color: '#fff', fontWeight: 500, background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', zIndex: 900, paddingLeft: 10 }}>🔥 Trending :</span>
 
                 <div
                   style={{
@@ -903,7 +906,7 @@ function App() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  background: '#1a1a1a',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
                   flexWrap: 'nowrap',   // ✅ force all items on one line
                   whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
                   overflow: 'hidden',   // optional: hides overflow
@@ -924,7 +927,7 @@ function App() {
                       style={{
                         padding: '0.4rem 0.8rem',
                         background: 'transparent',
-                        border: 'none',
+                        border: 'solid 1px #333',
                         color: '#fff',
                         cursor: 'pointer',
                         borderRadius: '4px',
@@ -933,7 +936,7 @@ function App() {
                     >
                       Perpetuals
                     </button>
-                      <button
+                    <button
                       onClick={() => {
                         window.location.href = '#';
                       }}
@@ -943,6 +946,7 @@ function App() {
                         background: 'transparent',
                         border: 'none',
                         color: '#fff',
+                        border: 'solid 1px #333',
                         cursor: 'pointer',
                         borderRadius: '4px',
                         fontSize: '0.65rem',
@@ -955,7 +959,7 @@ function App() {
                       onChange={(e) => setSelectedPerpSymbol(e.target.value)}
                       style={{
                         padding: '0.4rem',
-                        background: '#2a2a2a',
+                        background: '#1d1d22',
                         border: '1px solid #333',
                         borderRadius: '4px',
                         color: '#fff',
@@ -987,7 +991,9 @@ function App() {
                     </select> */}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+               
+                <div style={{ padding: '0.2rem 0.4rem',
+                        background: 'transparent',   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', border: 'solid 1px #333',borderRadius: '4px', }}>
                   <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0, fontSize: '0.85rem' }} />
                   <WalletIconButton />
                 </div>
@@ -995,49 +1001,57 @@ function App() {
 
               <div style={mainContainerStyle} className="main-container">
                 <div style={sidebarStyle} className="markets-sidebar">
-                  <h3 style={{ fontSize: '0.675rem', marginBottom: '1rem', color: '#fff' }}>Markets</h3>
+                  <h3 style={{ fontSize: '0.75rem', marginBottom: '1rem', color: '#fff' }}>
+                    Markets
+                  </h3>
+
                   {loading ? (
                     <div style={{ color: '#fff', fontSize: '0.75rem' }}>Loading...</div>
                   ) : (
                     tokens.map((token) => (
                       <div
                         key={token.address}
-                        className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''}`}
+                        className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''
+                          }`}
                         onClick={() => setSelectedToken(token)}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem',
-                          marginBottom: '0.5rem',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          background: selectedToken?.address === token.address ? '#333' : 'transparent',
-                        }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           {token.logoURI && (
-                            <img src={token.logoURI} alt={token.symbol} style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                            <img
+                              src={token.logoURI}
+                              alt={token.symbol}
+                              style={{ width: 20, height: 20, borderRadius: '50%' }}
+                            />
                           )}
                           <div>
-                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#fff' }}>{token.symbol}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#fff' }}>{token.name}</div>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#fff' }}>
+                              {token.symbol}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#aaa' }}>
+                              {token.name}
+                            </div>
                           </div>
                         </div>
+
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '0.875rem', color: '#fff' }}>{formatPrice(token.price)}</div>
+                          <div style={{ fontSize: '0.875rem', color: '#fff' }}>
+                            {formatPrice(token.price)}
+                          </div>
                           <div
                             style={{
                               fontSize: '0.75rem',
                               color: token.priceChange24h >= 0 ? '#1cc29a' : '#ff4d4f',
                             }}
                           >
-                            {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(2)}%
+                            {token.priceChange24h >= 0 ? '+' : ''}
+                            {token.priceChange24h.toFixed(2)}%
                           </div>
                         </div>
                       </div>
                     ))
                   )}
                 </div>
+
 
                 <div style={mainContentStyle} className="main-content">
                   <div style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
@@ -1052,38 +1066,68 @@ function App() {
                     <>
                       <div
                         className="info-box"
-                        style={{ padding: isMobile ? '0.5rem' : '0.75rem', borderBottom: '1px solid #262626', background: '#1a1a1a' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: isMobile ? '8px' : '16px',
+                          padding: isMobile ? '8px 10px' : '12px 16px',
+                          borderBottom: '1px solid #262626',
+                          background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
+                        }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          <h2 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff' }} className="title-glow">
-                            {selectedToken.symbol}/SOL
-                          </h2>
-                          <div>
-                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>Price: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatPrice(selectedToken.price)}</span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>24h Change: </span>
-                            <span
+                        {/* Pair */}
+                        <div
+                          className="info-title title-glow"
+                          style={{
+                            fontSize: '0.9375rem', // 15px
+                            fontWeight: 600,
+                            color: '#fff',
+                            lineHeight: 1.2,
+                            whiteSpace: 'nowrap',
+                            marginRight: isMobile ? '8px' : '16px',
+                          }}
+                        >
+                          {selectedToken.symbol}/SOL
+                        </div>
+
+                        {/* Stats with vertical separators */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: isMobile ? '8px' : '16px',
+                            flexWrap: 'wrap',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {[
+                            { label: 'Price', value: formatPrice(selectedToken.price), color: '#fff' },
+                            {
+                              label: '24h Change',
+                              value: `${selectedToken.priceChange24h >= 0 ? '+' : ''}${selectedToken.priceChange24h.toFixed(2)}%`,
+                              color: selectedToken.priceChange24h >= 0 ? '#1cc29a' : '#ff4d4f',
+                            },
+                            { label: '24h Volume', value: formatNumber(selectedToken.volume24h), color: '#fff' },
+                            { label: 'Liquidity', value: formatNumber(selectedToken.liquidity), color: '#fff' },
+                          ].map((item, index) => (
+                            <div
+                              key={item.label}
                               style={{
-                                fontWeight: 'bold',
-                                fontSize: '0.75rem',
-                                color: selectedToken.priceChange24h >= 0 ? '#1cc29a' : '#ff4d4f',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                lineHeight: 1.2,
+                                whiteSpace: 'nowrap',
+                                paddingLeft: index === 0 ? 0 : '12px', // spacing from separator
+                                borderLeft: index === 0 ? 'none' : '1px solid #262626', // vertical separator
                               }}
                             >
-                              {selectedToken.priceChange24h >= 0 ? '+' : ''}{selectedToken.priceChange24h.toFixed(2)}%
-                            </span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>24h Volume: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatNumber(selectedToken.volume24h)}</span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#fff', fontSize: '0.75rem' }}>Liquidity: </span>
-                            <span style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#fff' }}>{formatNumber(selectedToken.liquidity)}</span>
-                          </div>
+                              <span style={{ fontSize: '0.6875rem', color: '#9ca3af' }}>{item.label}</span>
+                              <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: item.color }}>{item.value}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
+
                       <div style={chartContainerStyle}>
                         <TradingViewChart
                           tokenAddress={selectedToken?.address}

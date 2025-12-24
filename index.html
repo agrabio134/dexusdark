@@ -1,21 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>$USDARK DEX</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://s3.tradingview.com/tv.js"></script>
-  </head>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$USDARK DEX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
 
-  <body>
-    <div id="root"></div>
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script type="module" src="/src/main.jsx"></script>
-    
-  </body>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="loader">
+      <div id="loading-number">0</div>
+      <div class="progress-bar">
+        <div id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Preloader Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let progress = 0;
+      const progressElement = document.getElementById('loading-number');
+      const fill = document.getElementById('progress-fill');
+      const preloader = document.getElementById('preloader');
+      const loader = document.querySelector('.loader');
+      const messages = [
+        'Unleashing darkness...',
+        'Destabilizing economy...',
+        'Summoning volatility...',
+        'Awakening the unstable...',
+        'Loading chaos...',
+        'Preparing for doom...',
+        'Igniting dark forces...',
+        'Brewing instability...',
+        'Charging dark energy...',
+        'Unlocking the void...'
+      ];
+
+      function createLoadingText() {
+        const text = document.createElement('div');
+        text.className = 'loading-text';
+        text.textContent = messages[Math.floor(Math.random() * messages.length)];
+        const x = (Math.random() - 0.5) * 600; // Random horizontal offset
+        const y = (Math.random() - 0.5) * 300; // Random vertical offset
+        text.style.left = `calc(50% + ${x}px)`;
+        text.style.top = `calc(50% + ${y}px)`;
+        loader.appendChild(text);
+        setTimeout(() => text.remove(), 3000); // Remove after animation
+      }
+
+      const textInterval = setInterval(createLoadingText, 800); // New text every 800ms
+
+      const interval = setInterval(() => {
+        progress += 1;
+        progressElement.textContent = progress;
+        fill.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(interval);
+          clearInterval(textInterval);
+          setTimeout(() => {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+              preloader.remove(); // Remove from DOM
+            }, 500);
+          }, 500);
+        }
+      }, 70); // Increment every 70ms for ~7s total
+    });
+  </script>
+</body>
 </html>

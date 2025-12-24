@@ -3,6 +3,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
 
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -12,6 +13,8 @@
   font-style: normal;
   line-height: 1.5;
   color: #000000;
+  background-color: #0B0F14;
+
 }
 
 body {
@@ -517,6 +520,15 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* Ensure wallet-adapter modals/popovers appear above sticky headers */
+.wallet-adapter-dropdown-list {
+    position: fixed !important;
+    z-index: 2147483647 !important;
+    top: auto !important;
+    right: 16px; /* align to header */
+}
+
+
 /* Solana-specific branding for USDARK social platform */
 .solana-branding {
   background: linear-gradient(45deg, #000000ea, #333333);
@@ -534,4 +546,134 @@ body {
 @keyframes badge-flicker {
   0%, 90%, 100% { opacity: 1; }
   5%, 85% { opacity: 0.8; }
+}
+/* loader */
+/* ... Your existing CSS ... */
+
+/* Preloader Styles */
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+   */
+   background-color: #0B0F14;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.loader {
+  text-align: center;
+  position: relative;
+}
+
+#loading-number {
+  font-size: 4rem;
+  color: #fff;
+  text-shadow: 0 0 10px #939393;
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px #939393;
+  }
+  100% {
+    text-shadow: 0 0 20px #939393;
+  }
+}
+
+.progress-bar {
+  width: 300px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(132, 132, 132, 0.3);
+}
+
+#progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(45deg, #ffffff, #333333);
+  transition: width 0.1s ease;
+}
+
+.loading-text {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.2rem;
+  pointer-events: none;
+  animation: fade-text 3s ease-in-out;
+  white-space: nowrap;
+  background-color: #00000000;
+}
+
+/* Markets sidebar - thinner scrollbar */
+.markets-sidebar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+.markets-sidebar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.markets-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.markets-sidebar::-webkit-scrollbar-thumb {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.markets-sidebar::-webkit-scrollbar-thumb:hover {
+   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+}
+
+@keyframes fade-text {
+  0% { opacity: 0; transform: translateY(20px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.markets-sidebar, .trading-panel, .nav-bar, .info-box{
+   background: #0B0F14 !important;
+}
+/* sidebar token item */
+.token-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+/* hover */
+.token-card:hover {
+border-color: #1d1d22;
+  border: 1px solid #2a2a30;
+}
+
+/* active / selected */
+.token-card.selected {
+border-color: #1d1d22;
+  border: 1px solid #2a2a30;
+}
+
+/* optional: hover even when selected */
+.token-card.selected:hover {
+  border-color: #1d1d22;
 }
