@@ -24,7 +24,7 @@ const ALPHA = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
 const LENNY = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
-const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
+
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
 const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP';
@@ -638,8 +638,13 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
-          LENNY, RAGE, FOURTWENTY, SERIOUSCAT, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
+          LENNY, RAGE, FOURTWENTY,  NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
         ];
+
+
+
+
+
         for (const mint of mints) {
           try {
             const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
