@@ -6,6 +6,7 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import { Flame, TrendingUp, Hash } from 'lucide-react';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
@@ -20,42 +21,28 @@ const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
 const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
 const FSJAL = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
 const ALPHA = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
-
 const LENNY = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
 const RAGE = 'C2omVhcvt3DDY77S2KZzawFJQeETZofgZ4eNWWkXpump';
 const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
 const SERIOUSCAT = '8iJhFLFq2SHhZBGKpKK2DfsSaJ62JZRn18dmX3sbpump';
-
-
 const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
-
-
 const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
-
 const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP';
-
 const ENGRAVE = 'ADMiFUmFUz3tzLozh7yTy2zWe1soM61aE995TZqLpump';
-
 const JOBS = '6cNcXWqYvK9nhD1TsjJ1ZH1KATXcaPaRJtZPHyVkJoBs';
-
 const WURK = 'ALR5X2H6THn2VDPoMtkVwxVktcN1kQGvxCwLfejzpump';
-
 const LC_SHIB = '43YakhC3TcSuTgSXnxFgw8uKL8VkuLuFa4M6Bninpump';
-
 const PUMP2 = '5oBshGwHKNTSk4KrTridfMmNGWk39K3k8jnxm1hxpump';
-
 
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
-
   static getDerivedStateFromError(error) {
     return { hasError: true, errorMessage: error.message };
   }
-
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)', borderRadius: '8px', padding: '1rem', color: '#ff4d4f' }}>
           <h3>Error in Application</h3>
           <p>{this.state.errorMessage}</p>
           <p>Please try refreshing the page.</p>
@@ -115,6 +102,7 @@ function TokenSelector({ tokens, selectedToken, setSelectedToken }) {
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'right 0.4rem center',
         backgroundSize: '0.8rem',
+        fontFamily: 'Inter, sans-serif',
       }}
     >
       {tokens.map((token) => (
@@ -185,7 +173,6 @@ function TradingViewChart({ tokenAddress, isMobile }) {
 
 function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }) {
   if (!isOpen) return null;
-
   const modalStyle = {
     position: 'fixed',
     top: 0,
@@ -198,9 +185,8 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
     justifyContent: 'center',
     zIndex: 10000,
   };
-
   const contentStyle = {
-    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
+    background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
     borderRadius: '8px',
     padding: '2rem',
     maxWidth: '400px',
@@ -209,19 +195,16 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
     color: '#fff',
     border: `1px solid ${type === 'success' ? '#1cc29a' : '#ff4d4f'}`,
   };
-
   const iconStyle = {
     fontSize: '3rem',
     marginBottom: '1rem',
     color: '#fff',
   };
-
   const viewTxButton = (txid) => {
     if (txid) {
       window.open(`https://solscan.io/tx/${txid}`, '_blank');
     }
   };
-
   return (
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
@@ -454,7 +437,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
   const inputBalance = side === 'buy' ? balance : tokenBalance;
   const maxInput = inputBalance * 0.99;
   const handleMax = () => setInputAmount(maxInput.toFixed(6));
-
   const swapButtonColor = side === 'buy' ? '#1cc29a' : '#ff4d4f';
 
   return (
@@ -474,7 +456,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
         message={modalMessage}
         type="error"
       />
-      <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', borderRadius: '8px', padding: '0.75rem' }}>
+      <div style={{ background: '#00000000', borderRadius: '8px', padding: '0.75rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
           <button
             onClick={() => { setSide('buy'); setInputAmount(''); }}
@@ -507,7 +489,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
             Sell
           </button>
         </div>
-
         <div style={{ marginBottom: '0.5rem' }}>
           <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>
             {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
@@ -520,7 +501,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               placeholder="0.0"
               style={{
                 flex: 1,
-
                 padding: '0.4rem 0.8rem',
                 background: '#1d1d22',
                 border: '1px solid #333',
@@ -528,6 +508,7 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
                 color: '#fff',
                 fontSize: '0.75rem',
                 marginRight: '5px',
+                fontFamily: 'Fira Code, monospace',
               }}
             />
             <button
@@ -550,7 +531,6 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
             Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
           </div>
         </div>
-
         <div style={{ marginBottom: '0.5rem' }}>
           <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>Slippage %</label>
           <input
@@ -567,16 +547,16 @@ function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
               borderRadius: '4px',
               color: '#fff',
               fontSize: '0.875rem',
+              fontFamily: 'Fira Code, monospace',
             }}
           />
         </div>
-
         {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#fff', textAlign: 'center' }}>Loading quote...</div>}
         {outputAmount && (
           <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#1d1d22', borderRadius: '4px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#fff' }}>
-              <span style={{color: '#fff', backgroundColor: '#00000000'  }}>Output:</span>
-              <span style={{color: '#fff', backgroundColor: '#00000000', fontWeight: 'bold' }}>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
+              <span style={{ color: '#fff', background: '#00000000' }}>Output:</span>
+              <span style={{ color: '#fff', background: '#00000000', fontWeight: 'bold' }}>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
             </div>
           </div>
         )}
@@ -612,7 +592,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [tokenMeta, setTokenMeta] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
-
   const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => 'https://solana-rpc.publicnode.com', []);
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
@@ -653,16 +632,6 @@ function App() {
 
   useEffect(() => {
     const loadTokens = async () => {
-
-
-
-
-
-
-
-
-
-
       try {
         setLoading(true);
         const allTokens = [];
@@ -671,12 +640,6 @@ function App() {
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
           LENNY, RAGE, FOURTWENTY, SERIOUSCAT, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
         ];
-
-
-
-
-
-
         for (const mint of mints) {
           try {
             const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
@@ -700,7 +663,6 @@ function App() {
             console.error(`Error fetching token ${mint}:`, e);
           }
         }
-
         const uniqueTokens = allTokens.map((pair) => ({
           address: pair.baseToken?.address || '',
           name: pair.baseToken?.name || 'Unknown',
@@ -710,9 +672,7 @@ function App() {
           volume24h: parseFloat(pair.volume?.h24) || 0,
           liquidity: parseFloat(pair.liquidity?.usd) || 0,
         })).filter(t => t.address && t.price > 0);
-
         let sortedTokens = uniqueTokens.sort((a, b) => b.volume24h - a.volume24h);
-
         const enrichedTokens = sortedTokens.map((token) => {
           const meta = tokenMeta.find((m) => m.address === token.address);
           let decimals = meta ? meta.decimals : 9;
@@ -725,16 +685,13 @@ function App() {
             logoURI: meta ? meta.logoURI : null,
           };
         });
-
         setTokens(enrichedTokens);
-
-        // Compute top gainers for trending
+        // Compute top gainers for trending (now top 5)
         const topGainers = enrichedTokens
           .filter(t => t.priceChange24h > 0) // Only positive gains
           .sort((a, b) => b.priceChange24h - a.priceChange24h)
-          .slice(0, 4);
+          .slice(0, 5);
         setTrendingTokens(topGainers);
-
         // Only set selectedToken if none is currently selected or if current selection is not in the new token list
         if (!selectedToken || !enrichedTokens.some(t => t.address === selectedToken.address)) {
           const darkToken = enrichedTokens.find(t => t.address === USDARK_CA) || enrichedTokens[0];
@@ -746,7 +703,6 @@ function App() {
         setLoading(false);
       }
     };
-
     loadTokens();
     const interval = setInterval(loadTokens, 30000);
     return () => clearInterval(interval);
@@ -759,7 +715,7 @@ function App() {
     return `$${(num / 1e3).toFixed(2)}K`;
   };
 
-  const medals = ['🥇', '🥈', '🥉', '🏅'];
+  const medals = ['🥇', '🥈', '🥉', '🏅', '🎖️'];
 
   const mainContainerStyle = {
     display: 'grid',
@@ -788,7 +744,7 @@ function App() {
 
   const sidebarStyle = {
     gridArea: 'sidebar',
-    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
+    background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
     borderRight: isMobile ? 'none' : '1px solid #262626',
     overflowY: 'auto',
     padding: isMobile ? '0.5rem' : '1rem',
@@ -797,12 +753,12 @@ function App() {
 
   const tradeStyle = {
     gridArea: 'trade',
-    background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
+    background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
     borderLeft: isMobile ? 'none' : '1px solid #262626',
     padding: isMobile ? '0.5rem' : '0.75rem',
     overflowY: isMobile ? 'visible' : 'auto',
     width: '100%',
-fontFamily: "'Orbitron', 'Inter', sans-serif",
+    fontFamily: "'Orbitron', 'Inter', sans-serif",
   };
 
   return (
@@ -816,108 +772,196 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                 background: '#0d0d0d',
                 color: '#fff',
                 position: 'relative',
+                fontFamily: 'Inter, sans-serif', // Global font
               }}
             >
+              {/* Pinned Top Bar for CA $USDARK */}
+              {/* Fully Mobile-Responsive Pinned CA Bar */}
               <div
                 style={{
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
-                  padding: '0.5rem 1rem',
-                  textAlign: 'center',
+                  background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
+                  padding: isMobile ? '0.5rem 0.75rem' : '0.5rem 1rem',
                   borderBottom: '1px solid #262626',
                   position: 'sticky',
                   top: 0,
                   zIndex: 1000,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: isMobile ? '0.4rem' : '0.6rem',
+                  flexWrap: 'nowrap',
+                  overflowX: 'auto', // Allows horizontal scroll on very small screens
+                  whiteSpace: 'nowrap',
+                  scrollbarWidth: 'none', // Hide scrollbar (Firefox)
+                  msOverflowStyle: 'none', // Hide scrollbar (IE/Edge)
                 }}
+                className="pinned-ca-bar"
               >
+                {/* Optional: Add style to hide scrollbar in WebKit browsers */}
+                <style>{`
+    .pinned-ca-bar::-webkit-scrollbar {
+      display: none;
+    }
+  `}</style>
+
+                <span
+                  style={{
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    color: '#1cc29a',
+                    fontWeight: 'bold',
+                    flexShrink: 0,
+                  }}
+                >
+                  📌 Pinned: $USDARK
+                </span>
+
+                {/* Contract Address - clickable to copy */}
                 <div
                   onClick={copyCA}
                   style={{
-                    fontSize: isMobile ? '0.7rem' : '0.875rem',
-                    color: '#1cc29a',
+                    fontSize: isMobile ? '0.75rem' : '0.875rem',
+                    color: '#fff',
                     cursor: 'pointer',
-
-                    fontWeight: '800',
-                  }}
-                >
-                  <span style={{
                     fontWeight: '600',
-                    textDecoration: 'none',
-                    color: '#ffffffff'
-                  }}>CA :</span> {USDARK_CA}
-                </div>
-              </div>
-              <div
-                style={{
-                  borderBottom: '1px solid #262626',
-                  padding: '0.5rem 0rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
-                  color: '#fff',
-                  position: 'sticky',
-                  top: '40px',
-                  zIndex: 900,
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  fontSize: '0.95rem',
-                  fontWeight: 500,
-                  gap: '0.5rem',
-                }}
-                className="ads-bar"
-              >
-                <span style={{ flexShrink: 0, color: '#fff', fontWeight: 500, background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);', zIndex: 900, paddingLeft: 10 }}>🔥 Trending :</span>
-
-                <div
-                  style={{
-                    display: 'inline-block',
-                    marginLeft: '0.5rem',
-                    animation: 'scroll-left 12s linear infinite',
+                    fontFamily: 'Fira Code, monospace',
+                    padding: '0.3rem 0.5rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: '4px',
+                    flexShrink: 0,
+                    userSelect: 'all', // Makes it easy to select/copy on tap
                   }}
+                  title="Click to copy CA"
                 >
-                  <span style={{ color: '#00ff9d', fontWeight: 600 }}>
-                    {trendingTokens.map((token, index) => (
-                      <span key={token.address} style={{ color: '#00ff9d', fontWeight: 600 }}>
-                        {medals[index]} ${token.symbol} + {token.priceChange24h.toFixed(2)}%
-                      </span>
-                    )).reduce((prev, curr) => prev ? [prev, ' ', curr] : curr, null)}
-                  </span>
+                  {isMobile
+                    ? `${USDARK_CA.slice(0, 6)}...${USDARK_CA.slice(-4)}`  // Shortened on mobile
+                    : USDARK_CA // Full on desktop/tablet
+                  }
                 </div>
 
-                <style>
-                  {`
-      @keyframes scroll-left {
-        from { transform: translateX(100%); }
-        to { transform: translateX(-100%); }
-      }
+                {/* Token Logo (Pro Image) */}
+                {selectedToken?.logoURI && (
+                  <img
+                    src={selectedToken.logoURI}
+                    alt="$USDARK"
+                    style={{
+                      width: isMobile ? 24 : 28,
+                      height: isMobile ? 24 : 28,
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                      border: '1px solid #333',
+                    }}
+                  />
+                )}
 
-      .ads-bar div:hover {
-        animation-play-state: paused; /* optional: pause on hover */
-      }
-    `}
-                </style>
+                {/* Optional: Copy success feedback could be added later */}
               </div>
+              {/* Trending Bar Below (Top 5 Tokens with Pro Images and Emojis) */}
+              <div
+  style={{
+    borderBottom: '1px solid #262626',
+    padding: '0.6rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    background: 'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%)',
+    position: 'sticky',
+    top: '40px', // adjust if needed for pinned bar
+    zIndex: 900,
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+    gap: '1.2rem',
+  }}
+  className="trending-bar"
+>
+  {/* Title: Red flame + white text */}
+  <span
+    style={{
+      flexShrink: 0,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      color: '#ffffff',
+      fontWeight: 700,
+      fontSize: '1rem',
+    }}
+  >
+    <Flame size={20} strokeWidth={2.5} color="#ff4d4f" />
+    <span style={{ color: '#ff4d4f' }}>Top 5 Trending</span>
+  </span>
 
+  {/* Tokens list */}
+  <div style={{ display: 'flex', gap: '1.5rem' }}>
+    {trendingTokens.map((token, index) => (
+      <span
+        key={token.address}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: '#ffffff',
+          fontWeight: 600,
+        }}
+      >
+        {/* Token logo */}
+        {token.logoURI && (
+          <img
+            src={token.logoURI}
+            alt={token.symbol}
+            style={{ width: '20px', height: '20px', borderRadius: '50%' }}
+          />
+        )}
 
+        {/* Rank in white */}
+        <span style={{ color: '#ffffff', opacity: 0.8 }}>
+          #{index + 1}
+        </span>
+
+        {/* Symbol in white */}
+        <span style={{ color: '#ffffff' }}>
+          ${token.symbol}
+        </span>
+
+        {/* Gain: neon green for positive, red if negative (rare for top gainers) */}
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f',
+            fontWeight: 700,
+          }}
+        >
+          <TrendingUp
+            size={16}
+            strokeWidth={2.5}
+            color={token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f'}
+          />
+          {token.priceChange24h >= 0 ? '+' : ''}
+          {token.priceChange24h.toFixed(2)}%
+        </span>
+      </span>
+    ))}
+  </div>
+</div>
 
               <div
-                style={{
+                style={{  
                   borderBottom: '1px solid #262626',
                   padding: '0.75rem 1rem',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);',
-                  flexWrap: 'nowrap',   // ✅ force all items on one line
-                  whiteSpace: 'nowrap', // ✅ prevents text or inline elements from wrapping
-                  overflow: 'hidden',   // optional: hides overflow
+                  background: 'linear-gradient(135deg, #0f0f14 0%, #15151c 50%, #0f0f14 100%)',
+                  flexWrap: 'nowrap',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
                   position: 'sticky',
-                  top: '40px',
+                  top: '80px',
                   zIndex: 900,
                 }}
                 className="nav-bar"
               >
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff' }}>USDARK-DEX</h1>
+                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff', fontFamily: 'Orbitron, sans-serif' }}>USDARK-DEX</h1>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
                       onClick={() => {
@@ -944,7 +988,7 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                       style={{
                         padding: '0.4rem 0.8rem',
                         background: 'transparent',
-                        border: 'none',
+                        // border: 'none',
                         color: '#fff',
                         border: 'solid 1px #333',
                         cursor: 'pointer',
@@ -954,65 +998,25 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                     >
                       USDARK PAD
                     </button>
-                    {/* <select
-                      value={selectedPerpSymbol}
-                      onChange={(e) => setSelectedPerpSymbol(e.target.value)}
-                      style={{
-                        padding: '0.4rem',
-                        background: '#1d1d22',
-                        border: '1px solid #333',
-                        borderRadius: '4px',
-                        color: '#fff',
-                        fontSize: '0.75rem',
-                        appearance: 'none',
-                        backgroundImage:
-                          'url("data:image/svg+xml;utf8,<svg fill=\'white\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 0.4rem center',
-                        backgroundSize: '0.8rem',
-                      }}
-                    >
-                      {[
-                        'PERP_BTC_USDC',
-                        'PERP_ETH_USDC',
-                        'PERP_SOL_USDC',
-                        'PERP_BNB_USDC',
-                        'PERP_XRP_USDC',
-                        'PERP_ADA_USDC',
-                        'PERP_DOGE_USDC',
-                        'PERP_SHIB_USDC',
-                        'PERP_AVAX_USDC',
-                        'PERP_TRX_USDC',
-                      ].map((symbol) => (
-                        <option key={symbol} value={symbol}>
-                          {symbol.replace('PERP_', '').replace('_USDC', '')}/USDC
-                        </option>
-                      ))}
-                    </select> */}
                   </div>
                 </div>
-               
-                <div style={{ padding: '0.2rem 0.4rem',
-                        background: 'transparent',   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', border: 'solid 1px #333',borderRadius: '4px', }}>
+                <div style={{ padding: '0.2rem 0.4rem', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', border: 'solid 1px #333', borderRadius: '4px' }}>
                   <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0, fontSize: '0.85rem' }} />
                   <WalletIconButton />
                 </div>
               </div>
-
               <div style={mainContainerStyle} className="main-container">
                 <div style={sidebarStyle} className="markets-sidebar">
-                  <h3 style={{ fontSize: '0.75rem', marginBottom: '1rem', color: '#fff' }}>
+                  <h3 style={{ fontSize: '0.75rem', marginBottom: '1rem', color: '#fff', fontFamily: 'Montserrat, sans-serif' }}>
                     Markets
                   </h3>
-
                   {loading ? (
                     <div style={{ color: '#fff', fontSize: '0.75rem' }}>Loading...</div>
                   ) : (
                     tokens.map((token) => (
                       <div
                         key={token.address}
-                        className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''
-                          }`}
+                        className={`token-card ${selectedToken?.address === token.address ? 'selected' : ''}`}
                         onClick={() => setSelectedToken(token)}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -1032,9 +1036,8 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                             </div>
                           </div>
                         </div>
-
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '0.875rem', color: '#fff' }}>
+                          <div style={{ fontSize: '0.875rem', color: '#fff', fontFamily: 'Fira Code, monospace' }}>
                             {formatPrice(token.price)}
                           </div>
                           <div
@@ -1051,8 +1054,6 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                     ))
                   )}
                 </div>
-
-
                 <div style={mainContentStyle} className="main-content">
                   <div style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
                     <TokenSelector
@@ -1061,7 +1062,6 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                       setSelectedToken={setSelectedToken}
                     />
                   </div>
-
                   {selectedToken && (
                     <>
                       <div
@@ -1080,17 +1080,17 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                         <div
                           className="info-title title-glow"
                           style={{
-                            fontSize: '0.9375rem', // 15px
+                            fontSize: '0.9375rem',
                             fontWeight: 600,
                             color: '#fff',
                             lineHeight: 1.2,
                             whiteSpace: 'nowrap',
                             marginRight: isMobile ? '8px' : '16px',
+                            fontFamily: 'Roboto, sans-serif',
                           }}
                         >
                           {selectedToken.symbol}/SOL
                         </div>
-
                         {/* Stats with vertical separators */}
                         <div
                           style={{
@@ -1117,17 +1117,16 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                                 flexDirection: 'column',
                                 lineHeight: 1.2,
                                 whiteSpace: 'nowrap',
-                                paddingLeft: index === 0 ? 0 : '12px', // spacing from separator
-                                borderLeft: index === 0 ? 'none' : '1px solid #262626', // vertical separator
+                                paddingLeft: index === 0 ? 0 : '12px',
+                                borderLeft: index === 0 ? 'none' : '1px solid #262626',
                               }}
                             >
                               <span style={{ fontSize: '0.6875rem', color: '#9ca3af' }}>{item.label}</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: item.color }}>{item.value}</span>
+                              <span style={{ fontSize: '0.8125rem', fontWeight: 500, color: item.color, fontFamily: 'Fira Code, monospace' }}>{item.value}</span>
                             </div>
                           ))}
                         </div>
                       </div>
-
                       <div style={chartContainerStyle}>
                         <TradingViewChart
                           tokenAddress={selectedToken?.address}
@@ -1137,7 +1136,6 @@ fontFamily: "'Orbitron', 'Inter', sans-serif",
                     </>
                   )}
                 </div>
-
                 <div style={tradeStyle} className="trading-panel">
                   <SpotInterface selectedToken={selectedToken} allTokens={tokens} setSelectedToken={setSelectedToken} />
                 </div>

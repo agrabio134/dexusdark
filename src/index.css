@@ -2,18 +2,19 @@
 /* Font: Orbitron, monospace; Light gradient background with dark particles and glowing effects, adapted for Solana-based USDARK social platform */
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Inter&family=Montserrat&family=Roboto&family=Fira+Code&display=swap');
 
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Orbitron', monospace !important;
+font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-style: normal;
   line-height: 1.5;
   color: #000000;
-  background-color: #0B0F14;
+  /* background-color: #0B0F14; */
 
 }
 
@@ -21,6 +22,7 @@ body {
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
   color: #000000;
   margin: 0;
+/* font-family: 'Inter', sans-serif;| */
   font-family: 'Orbitron', monospace !important;
   overflow-x: hidden;
   min-height: 100vh;
