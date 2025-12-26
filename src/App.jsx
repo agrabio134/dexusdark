@@ -6,7 +6,7 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import { Flame, TrendingUp, Hash } from 'lucide-react';
+import { Flame, TrendingUp, Hash, RocketIcon } from 'lucide-react';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
@@ -815,9 +815,18 @@ function App() {
                     color: '#1cc29a',
                     fontWeight: 'bold',
                     flexShrink: 0,
+                  }}  
+                >
+                  <RocketIcon size={16} color="#1cc29a" /> $USDARK
+                </span>
+                <span
+                  style={{
+                    fontSize: isMobile ? '0.75rem' : '0.875rem',
+                    color: '#aaa',
+                    flexShrink: 0,
                   }}
                 >
-                  📌 Pinned: $USDARK
+                  CA:
                 </span>
 
                 {/* Contract Address - clickable to copy */}
