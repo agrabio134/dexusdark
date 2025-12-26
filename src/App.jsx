@@ -638,7 +638,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
-          LENNY,  FOURTWENTY,  NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
+          LENNY, FOURTWENTY, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
         ];
 
 
@@ -815,7 +815,7 @@ function App() {
                     color: '#1cc29a',
                     fontWeight: 'bold',
                     flexShrink: 0,
-                  }}  
+                  }}
                 >
                   <RocketIcon size={16} color="#1cc29a" /> $USDARK
                 </span>
@@ -871,94 +871,113 @@ function App() {
               </div>
               {/* Trending Bar Below (Top 5 Tokens with Pro Images and Emojis) */}
               <div
-  style={{
-    borderBottom: '1px solid #262626',
-    padding: '0.6rem 1rem',
-    display: 'flex',
-    alignItems: 'center',
-    background: 'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%)',
-    position: 'sticky',
-    top: '40px', // adjust if needed for pinned bar
-    zIndex: 900,
-    overflowX: 'auto',
-    whiteSpace: 'nowrap',
-    gap: '1.2rem',
-  }}
-  className="trending-bar"
->
-  {/* Title: Red flame + white text */}
-  <span
-    style={{
-      flexShrink: 0,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      color: '#ffffff',
-      fontWeight: 700,
-      fontSize: '1rem',
-    }}
-  >
-    <Flame size={20} strokeWidth={2.5} color="#ff4d4f" />
-    <span style={{ color: '#ff4d4f' }}>Top 5 Trending</span>
-  </span>
+                className="trending-bar marquee-container"
+                style={{
+                  borderBottom: '1px solid #262626',
+                  padding: '0.6rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  background:
+                    'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%)',
+                  position: 'sticky',
+                  top: '40px',
+                  zIndex: 900,
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Fixed title (does NOT scroll) */}
+                    <span className="trending-label">
+                  <Flame size={20} strokeWidth={2.5} color="#ff4d4f" />
+                  <span>Top 5 Trending</span>
+                </span>
 
-  {/* Tokens list */}
-  <div style={{ display: 'flex', gap: '1.5rem' }}>
-    {trendingTokens.map((token, index) => (
-      <span
-        key={token.address}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          color: '#ffffff',
-          fontWeight: 600,
-        }}
-      >
-        {/* Token logo */}
-        {token.logoURI && (
-          <img
-            src={token.logoURI}
-            alt={token.symbol}
-            style={{ width: '20px', height: '20px', borderRadius: '50%' }}
-          />
-        )}
 
-        {/* Rank in white */}
-        <span style={{ color: '#ffffff', opacity: 0.8 }}>
-          #{index + 1}
-        </span>
+                {/* Marquee */}
+                <div className="marquee">
+                  <div className="marquee-track">
+                    {[...trendingTokens, ...trendingTokens].map((token, index) => (
+                      <span
+                        key={`${token.address}-${index}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          color: '#ffffff',
+                          fontWeight: 600,
+                          marginRight: '1.5rem',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {token.logoURI && (
+                          <img
+                            src={token.logoURI}
+                            alt={token.symbol}
+                            style={{
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '50%',
+                            }}
+                          />
+                        )}
 
-        {/* Symbol in white */}
-        <span style={{ color: '#ffffff' }}>
-          ${token.symbol}
-        </span>
+                        <span style={{ opacity: 0.8, color: '#ffffff', }}>
+                          #{(index % trendingTokens.length) + 1}
+                        </span>
 
-        {/* Gain: neon green for positive, red if negative (rare for top gainers) */}
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            color: token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f',
-            fontWeight: 700,
-          }}
-        >
-          <TrendingUp
-            size={16}
-            strokeWidth={2.5}
-            color={token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f'}
-          />
-          {token.priceChange24h >= 0 ? '+' : ''}
-          {token.priceChange24h.toFixed(2)}%
-        </span>
-      </span>
-    ))}
-  </div>
-</div>
+                        <span style={{ color: '#ffffff', }}>${token.symbol}</span>
+
+                        <span
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            color: token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f',
+                            fontWeight: 700,
+                          }}
+                        >
+                          <TrendingUp
+                            size={16}
+                            strokeWidth={2.5}
+                            color={token.priceChange24h >= 0 ? '#00ff9d' : '#ff4d4f'}
+                          />
+                          {token.priceChange24h >= 0 ? '+' : ''}
+                          {token.priceChange24h.toFixed(2)}%
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <style jsx>{`
+    .marquee {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      width: max-content;
+      animation: scroll-left 30s linear infinite;
+    }
+
+    .marquee:hover .marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  `}</style>
+              </div>
+
 
               <div
-                style={{  
+                style={{
                   borderBottom: '1px solid #262626',
                   padding: '0.75rem 1rem',
                   display: 'flex',

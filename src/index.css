@@ -679,3 +679,50 @@ border-color: #1d1d22;
 .token-card.selected:hover {
   border-color: #1d1d22;
 }
+
+/* top 5 trending styles
+ */
+ /* Desktop/default */
+.trending-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.trending-label span {
+  color: #ff4d4f;
+}
+
+/* Mobile <768px */
+@media (max-width: 768px) {
+  .trending-label {
+    gap: 4px;
+    font-size: 0.8rem; /* smaller text */
+    margin-right: 0.8rem;
+  }
+
+  .trending-label svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+/* Extra small <420px */
+@media (max-width: 420px) {
+  .trending-label {
+    gap: 3px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+  }
+
+  .trending-label svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
