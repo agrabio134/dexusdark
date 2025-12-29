@@ -34,6 +34,8 @@ const WURK = 'ALR5X2H6THn2VDPoMtkVwxVktcN1kQGvxCwLfejzpump';
 const LC_SHIB = '43YakhC3TcSuTgSXnxFgw8uKL8VkuLuFa4M6Bninpump';
 const PUMP2 = '5oBshGwHKNTSk4KrTridfMmNGWk39K3k8jnxm1hxpump';
 
+
+const SIMD = 'EMeugag3yfyvKqNKknGDWAudNALafZjbv9ByzCE8pump';
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
   static getDerivedStateFromError(error) {
@@ -638,7 +640,7 @@ function App() {
         const mints = [
           USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
           PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
-          LENNY, FOURTWENTY, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2
+          LENNY, FOURTWENTY, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2, SIMD
         ];
 
 
