@@ -11,16 +11,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet">
   <script src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    /* Critical loader CSS stays inline so it is styled before the Vite bundle arrives. */
+    #preloader{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;background:#070908;color:#f5f7f6;font-family:Inter,system-ui,sans-serif;transition:opacity .35s ease,visibility .35s ease}
+    #preloader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+    #preloader .loader{width:min(320px,78vw);text-align:center}
+    #preloader .loader-mark{width:52px;height:52px;margin:0 auto 22px;border:1px solid rgba(41,214,164,.3);border-radius:14px;display:grid;place-items:center;background:rgba(41,214,164,.08);box-shadow:0 0 35px rgba(41,214,164,.12);font:800 18px Orbitron,sans-serif;color:#29d6a4}
+    #loading-number{font:700 34px Orbitron,sans-serif;letter-spacing:.04em;color:#fff}
+    #loading-number::after{content:'%';margin-left:3px;font-size:13px;color:#64716b}
+    #preloader .progress-bar{height:3px;margin-top:15px;overflow:hidden;border-radius:10px;background:#1c2420}
+    #progress-fill{width:0;height:100%;border-radius:inherit;background:#29d6a4;box-shadow:0 0 14px rgba(41,214,164,.7);transition:width .08s linear}
+    #preloader .loader-caption{margin-top:14px;color:#718079;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+    @media(prefers-reduced-motion:reduce){#preloader,#progress-fill{transition:none}}
+  </style>
 </head>
 
 <body>
   <!-- Preloader -->
-  <div id="preloader">
+  <div id="preloader" role="status" aria-label="Loading USDARK DEX">
     <div class="loader">
+      <div class="loader-mark">UD</div>
       <div id="loading-number">0</div>
       <div class="progress-bar">
         <div id="progress-fill"></div>
       </div>
+      <div class="loader-caption">Initializing markets</div>
     </div>
   </div>
 
@@ -34,49 +49,31 @@
       const progressElement = document.getElementById('loading-number');
       const fill = document.getElementById('progress-fill');
       const preloader = document.getElementById('preloader');
-      const loader = document.querySelector('.loader');
-      const messages = [
-        'Unleashing darkness...',
-        'Destabilizing economy...',
-        'Summoning volatility...',
-        'Awakening the unstable...',
-        'Loading chaos...',
-        'Preparing for doom...',
-        'Igniting dark forces...',
-        'Brewing instability...',
-        'Charging dark energy...',
-        'Unlocking the void...'
-      ];
-
-      function createLoadingText() {
-        const text = document.createElement('div');
-        text.className = 'loading-text';
-        text.textContent = messages[Math.floor(Math.random() * messages.length)];
-        const x = (Math.random() - 0.5) * 600; // Random horizontal offset
-        const y = (Math.random() - 0.5) * 300; // Random vertical offset
-        text.style.left = `calc(50% + ${x}px)`;
-        text.style.top = `calc(50% + ${y}px)`;
-        loader.appendChild(text);
-        setTimeout(() => text.remove(), 3000); // Remove after animation
-      }
-
-      const textInterval = setInterval(createLoadingText, 800); // New text every 800ms
-
+      const startedAt = performance.now();
       const interval = setInterval(() => {
-        progress += 1;
+        progress = Math.min(progress + 4, 96);
         progressElement.textContent = progress;
         fill.style.width = `${progress}%`;
-        if (progress >= 100) {
+      }, 35);
+
+      let dismissed = false;
+      const dismiss = () => {
+        if (dismissed) return;
+        dismissed = true;
+        const delay = Math.max(0, 650 - (performance.now() - startedAt));
+        setTimeout(() => {
           clearInterval(interval);
-          clearInterval(textInterval);
+          progressElement.textContent = '100';
+          fill.style.width = '100%';
           setTimeout(() => {
-            preloader.style.opacity = '0';
-            setTimeout(() => {
-              preloader.remove(); // Remove from DOM
-            }, 500);
-          }, 500);
-        }
-      }, 70); // Increment every 70ms for ~7s total
+            preloader.classList.add('is-hidden');
+            setTimeout(() => preloader.remove(), 400);
+          }, 100);
+        }, delay);
+      };
+
+      window.addEventListener('usdark:ready', dismiss, { once: true });
+      setTimeout(dismiss, 2500);
     });
   </script>
 </body>

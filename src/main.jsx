@@ -9,3 +9,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {window.location.pathname === '/auth/admin' ? <AdminPanel /> : <App />}
   </React.StrictMode>,
 )
+
+requestAnimationFrame(() => window.dispatchEvent(new Event('usdark:ready')))

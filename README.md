@@ -8,7 +8,19 @@ Listings are persisted in `data/listings.json` and served by the Node API. On fi
 2. Run `npm install` and `npm run dev`.
 3. Open `/auth/admin` to list, delist, relist, or permanently remove token mints.
 
-For production, run `npm run build` followed by `npm start`. Set `NODE_ENV=production` when the site is served through HTTPS so admin cookies are marked Secure. Back up `data/listings.json` as part of deployment persistence.
+### Netlify deployment
+
+The committed `netlify.toml` builds the Vite frontend, deploys the API as a Netlify Function, preserves SPA routes such as `/auth/admin`, and stores listings in the site-wide `usdark-listings` Netlify Blobs store so they survive redeploys.
+
+Before deploying, add these variables under **Netlify → Project configuration → Environment variables**:
+
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `SESSION_SECRET` (at least 32 random characters)
+
+Trigger a new deploy after saving them. Do not commit `.env`; it is only for local development.
+
+For a traditional Node host, run `npm run build` followed by `npm start`. Set `NODE_ENV=production` when served through HTTPS and persist `data/listings.json`.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
