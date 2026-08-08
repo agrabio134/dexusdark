@@ -1,1 +1,41 @@
 :root{color-scheme:dark}.admin-shell{min-height:100vh;background:radial-gradient(circle at 50% -20%,#183a33 0,transparent 35%),#08090b;color:#f5f7f6;font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;padding:32px}.admin-shell *{box-sizing:border-box}.admin-card{width:min(440px,100%);background:rgba(18,20,23,.94);border:1px solid #282d2d;border-radius:16px;padding:32px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.login-card{display:flex;flex-direction:column;gap:16px}.admin-brand{color:#fff;text-decoration:none;font:800 19px Orbitron,sans-serif;letter-spacing:.06em}.admin-brand span,.eyebrow{color:#1cc29a}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;margin:12px 0 4px}.admin-card h1,.admin-card h2{margin:0}.admin-card h1{font-size:30px}.admin-card h2{font-size:20px}.muted,.dashboard header p{color:#949c99;margin:0}.admin-card label{font-size:13px;font-weight:700;color:#cbd0ce;display:grid;gap:8px}.admin-card input{width:100%;border:1px solid #333938;border-radius:8px;background:#0b0d0e;color:#fff;padding:12px 14px;outline:none}.admin-card input:focus{border-color:#1cc29a;box-shadow:0 0 0 3px rgba(28,194,154,.12)}button{font:inherit}.primary,.ghost,.icon-button,.danger-outline,.success-outline{border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{border:0;background:#1cc29a;color:#07100e;font-weight:800;padding:12px 18px}.primary:disabled,button:disabled{opacity:.5;cursor:not-allowed}.back-link{color:#9ba4a1;text-align:center;text-decoration:none;font-size:13px}.notice{padding:10px 12px;border-radius:7px;font-size:13px}.notice.error{background:#3a171b;color:#ff9da5}.notice.success{background:#102c26;color:#71e0c3}.dashboard{display:block;padding:28px max(24px,calc((100vw - 1100px)/2));}.dashboard header{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}.dashboard header>div{display:grid;gap:7px}.ghost,.icon-button{border:1px solid #343a39;background:#151819;color:#d8dddb;padding:9px 12px}.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}.admin-stats div{background:#121416;border:1px solid #252a29;border-radius:12px;padding:20px;display:grid;gap:6px}.admin-stats span{color:#939b98;font-size:12px}.admin-stats strong{font-size:28px}.admin-card.wide{width:100%;margin-bottom:14px;padding:24px}.section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.section-heading .eyebrow{margin-top:0}.mint-form{display:flex;gap:10px}.mint-form input{flex:1}.listing-table{overflow:hidden}.table-head,.listing-row{display:grid;grid-template-columns:minmax(280px,1fr) 110px 180px;gap:20px;align-items:center}.table-head{color:#77807d;font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:10px 12px}.listing-row{border-top:1px solid #282d2d;padding:14px 12px}.listing-row code{overflow:hidden;text-overflow:ellipsis;color:#dce2df}.status{width:max-content;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:800}.status.active{background:#12352c;color:#63dbba}.status.inactive{background:#382023;color:#f1979e}.actions{display:flex;justify-content:flex-end;gap:8px}.danger-outline,.success-outline{padding:8px 12px;background:transparent}.danger-outline{border:1px solid #71363c;color:#f1979e}.success-outline{border:1px solid #286c59;color:#63dbba}.icon-button.delete{color:#e47982;padding:8px}.empty{text-align:center;color:#868e8b;padding:30px}.dashboard>.notice{margin-bottom:14px}@media(max-width:700px){.admin-shell{padding:18px}.dashboard{padding:20px 14px}.admin-stats{grid-template-columns:1fr}.mint-form{flex-direction:column}.table-head{display:none}.listing-row{grid-template-columns:1fr auto;gap:10px}.listing-row code{grid-column:1/-1}.actions{justify-content:flex-start}.admin-card.wide{padding:18px}}
+
+/* Refined USDARK admin surfaces */
+.admin-shell { background: radial-gradient(circle at 50% -15%, rgba(34, 104, 81, .22), transparent 32%), #070908; }
+.admin-card { border-color: #202824; background: rgba(12, 16, 14, .96); box-shadow: 0 28px 90px rgba(0,0,0,.5); }
+.login-card { padding: 38px; gap: 18px; }
+.admin-card input { min-height: 46px; border-color: #2b3531; background: #090c0b; }
+.primary { min-height: 44px; background: #29d6a4; transition: transform .18s ease, filter .18s ease, box-shadow .18s ease; }
+.primary:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 10px 28px rgba(41,214,164,.15); }
+.back-link:hover { color: #fff; }
+.dashboard { width: min(100%, 1180px); margin: auto; }
+.dashboard header { padding: 4px 2px; }
+.admin-stats div, .admin-card.wide { background: rgba(13,17,15,.96); border-color: #202824; }
+.admin-stats div { position: relative; overflow: hidden; padding: 22px; }
+.admin-stats div::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 2px; background: #29d6a4; opacity: .55; }
+.admin-stats strong { font-family: Orbitron, sans-serif; font-size: 25px; }
+.listing-row { transition: background .16s ease; }
+.listing-row:hover { background: rgba(255,255,255,.018); }
+.listing-row code { font-family: Fira Code, monospace; font-size: 12px; }
+.ghost:hover, .icon-button:hover { border-color: #51615a; background: #1a211e; }
+.danger-outline:hover { background: rgba(255,102,112,.08); }
+.success-outline:hover { background: rgba(41,214,164,.08); }
+
+@media(max-width:700px) {
+  .admin-shell { padding: 14px; }
+  .login-card { padding: 26px 22px; }
+  .dashboard { padding: 18px 12px 32px; }
+  .dashboard header { margin-bottom: 18px; }
+  .dashboard header p { font-size: 12px; }
+  .ghost { padding: 9px; font-size: 0; }
+  .ghost svg { width: 18px; height: 18px; }
+  .admin-stats { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
+  .admin-stats div { padding: 14px 11px; }
+  .admin-stats span { font-size: 9px; line-height: 1.3; }
+  .admin-stats strong { font-size: 20px; }
+  .admin-card.wide { padding: 18px 14px; border-radius: 12px; }
+  .mint-form .primary { width: 100%; }
+  .listing-row { grid-template-columns: minmax(0,1fr) auto; padding: 15px 4px; }
+  .listing-row code { font-size: 10px; }
+  .actions button { min-height: 38px; }
+}

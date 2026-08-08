@@ -5,7 +5,7 @@ import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-r
 import { PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import { Flame, TrendingUp, Hash, RocketIcon } from 'lucide-react';
+import { ArrowLeftRight, CandlestickChart, Flame, TrendingUp, RocketIcon } from 'lucide-react';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
@@ -433,9 +433,10 @@ function SpotInterface({ selectedToken }) {
         message={modalMessage}
         type="error"
       />
-      <div style={{ background: '#00000000', borderRadius: '8px', padding: '0.75rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
+      <div className="spot-interface" style={{ background: '#00000000', borderRadius: '8px', padding: '0.75rem' }}>
+        <div className="order-tabs" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
           <button
+            className={side === 'buy' ? 'active buy' : ''}
             onClick={() => { setSide('buy'); setInputAmount(''); }}
             style={{
               padding: '0.4rem',
@@ -451,6 +452,7 @@ function SpotInterface({ selectedToken }) {
             Buy
           </button>
           <button
+            className={side === 'sell' ? 'active sell' : ''}
             onClick={() => { setSide('sell'); setInputAmount(''); }}
             style={{
               padding: '0.4rem',
@@ -466,11 +468,11 @@ function SpotInterface({ selectedToken }) {
             Sell
           </button>
         </div>
-        <div style={{ marginBottom: '0.5rem' }}>
+        <div className="trade-field" style={{ marginBottom: '0.5rem' }}>
           <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>
             {side === 'buy' ? 'SOL' : selectedToken.symbol} Amount
           </label>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="amount-input" style={{ display: 'flex', alignItems: 'center' }}>
             <input
               type="number"
               value={inputAmount}
@@ -504,11 +506,11 @@ function SpotInterface({ selectedToken }) {
               Max
             </button>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#fff', marginTop: '0.25rem' }}>
+          <div className="balance-line" style={{ fontSize: '0.75rem', color: '#fff', marginTop: '0.25rem' }}>
             Balance: {inputBalance.toFixed(4)} {side === 'buy' ? 'SOL' : selectedToken.symbol}
           </div>
         </div>
-        <div style={{ marginBottom: '0.5rem' }}>
+        <div className="trade-field" style={{ marginBottom: '0.5rem' }}>
           <label style={{ display: 'block', fontSize: '0.75rem', color: '#fff', marginBottom: '0.25rem' }}>Slippage %</label>
           <input
             type="number"
@@ -530,7 +532,7 @@ function SpotInterface({ selectedToken }) {
         </div>
         {isFetchingQuote && <div style={{ fontSize: '0.75rem', color: '#fff', textAlign: 'center' }}>Loading quote...</div>}
         {outputAmount && (
-          <div style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#1d1d22', borderRadius: '4px' }}>
+          <div className="quote-output" style={{ marginBottom: '0.5rem', padding: '0.5rem', background: '#1d1d22', borderRadius: '4px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#fff' }}>
               <span style={{ color: '#fff', background: '#00000000' }}>Output:</span>
               <span style={{ color: '#fff', background: '#00000000', fontWeight: 'bold' }}>{outputAmount} {side === 'buy' ? selectedToken.symbol : 'SOL'}</span>
@@ -539,6 +541,7 @@ function SpotInterface({ selectedToken }) {
         )}
         {error && <div style={{ color: '#ff4d4f', fontSize: '0.75rem', marginBottom: '0.5rem' }}>{error}</div>}
         <button
+          className={`execute-swap ${side}`}
           onClick={executeSwap}
           disabled={!inputAmount || isFetchingQuote || parseFloat(inputAmount) > inputBalance || !wallet.connected}
           style={{
@@ -569,6 +572,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [tokenMeta, setTokenMeta] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileView, setMobileView] = useState('chart');
   const endpoint = useMemo(() => 'https://solana-rpc.publicnode.com', []);
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
@@ -740,6 +744,7 @@ function App() {
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
             <div
+              className="exchange-shell"
               style={{
                 minHeight: '100vh',
                 background: '#0d0d0d',
@@ -961,8 +966,17 @@ function App() {
                 }}
                 className="nav-bar"
               >
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold', color: '#fff', fontFamily: 'Orbitron, sans-serif' }}>USDARK-DEX</h1>
+                <div className="nav-identity" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'no-wrap' }}>
+                  <a href="/" className="brand-lockup" aria-label="USDARK DEX home">
+                    <span className="brand-icon">
+                      <img
+                        src="https://usdark.app/logo.png"
+                        alt="USDARK"
+                        onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/logo.png'; }}
+                      />
+                    </span>
+                    <span className="brand-copy"><strong>USDARK</strong><small>DECENTRALIZED EXCHANGE</small></span>
+                  </a>
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'no-wrap' }}>
                     <button
                       onClick={() => {
@@ -1001,16 +1015,28 @@ function App() {
                     </button>
                   </div>
                 </div>
-                <div style={{ padding: '0.2rem 0.4rem', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', border: 'solid 1px #333', borderRadius: '4px' }}>
-                  <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0, fontSize: '0.85rem' }} />
-                  <WalletIconButton />
+                <div className="nav-actions">
+                  <span className="network-pill"><i /> Solana</span>
+                  <div className="wallet-control" style={{ padding: '0.2rem 0.4rem', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', border: 'solid 1px #333', borderRadius: '4px' }}>
+                    <WalletMultiButton className="wallet-adapter-button-desktop" style={{ backgroundColor: 'rgba(28, 194, 155, 0)', padding: 0, fontSize: '0.85rem' }} />
+                    <WalletIconButton />
+                  </div>
                 </div>
+              </div>
+              <div className="mobile-view-switch" role="tablist" aria-label="Trading view">
+                <button className={mobileView === 'chart' ? 'active' : ''} onClick={() => setMobileView('chart')} role="tab" aria-selected={mobileView === 'chart'}>
+                  <CandlestickChart size={17} /> Chart
+                </button>
+                <button className={mobileView === 'trade' ? 'active' : ''} onClick={() => setMobileView('trade')} role="tab" aria-selected={mobileView === 'trade'}>
+                  <ArrowLeftRight size={17} /> Trade
+                </button>
               </div>
               <div style={mainContainerStyle} className="main-container">
                 <div style={sidebarStyle} className="markets-sidebar">
-                  <h3 style={{ fontSize: '0.75rem', marginBottom: '1rem', color: '#fff', fontFamily: 'Montserrat, sans-serif' }}>
-                    Markets
-                  </h3>
+                  <div className="markets-heading">
+                    <div><span>MARKETS</span><strong>Explore tokens</strong></div>
+                    <em>{tokens.length}</em>
+                  </div>
                   {loading ? (
                     <div style={{ color: '#fff', fontSize: '0.75rem' }}>Loading...</div>
                   ) : (
@@ -1021,12 +1047,14 @@ function App() {
                         onClick={() => setSelectedToken(token)}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          {token.logoURI && (
+                          {token.logoURI ? (
                             <img
                               src={token.logoURI}
                               alt={token.symbol}
-                              style={{ width: 20, height: 20, borderRadius: '50%' }}
+                              className="token-logo"
                             />
+                          ) : (
+                            <span className="token-logo fallback">{token.symbol.slice(0, 1)}</span>
                           )}
                           <div>
                             <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#fff' }}>
@@ -1055,8 +1083,8 @@ function App() {
                     ))
                   )}
                 </div>
-                <div style={mainContentStyle} className="main-content">
-                  <div style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
+                <div style={mainContentStyle} className={`main-content ${mobileView === 'chart' ? 'mobile-active' : ''}`}>
+                  <div className="selector-wrap" style={{ padding: isMobile ? '0.5rem' : '0.75rem' }}>
                     <TokenSelector
                       tokens={tokens}
                       selectedToken={selectedToken}
@@ -1090,10 +1118,14 @@ function App() {
                             fontFamily: 'Roboto, sans-serif',
                           }}
                         >
-                          {selectedToken.symbol}/SOL
+                          <span className="selected-token-identity">
+                            {selectedToken.logoURI ? <img src={selectedToken.logoURI} alt="" /> : <span>{selectedToken.symbol.slice(0, 1)}</span>}
+                            <span><strong>{selectedToken.symbol}/SOL</strong><small>{selectedToken.name}</small></span>
+                          </span>
                         </div>
                         {/* Stats with vertical separators */}
                         <div
+                          className="market-stats"
                           style={{
                             display: 'flex',
                             gap: isMobile ? '8px' : '16px',
@@ -1112,6 +1144,7 @@ function App() {
                             { label: 'Liquidity', value: formatNumber(selectedToken.liquidity), color: '#fff' },
                           ].map((item, index) => (
                             <div
+                              className="stat-item"
                               key={item.label}
                               style={{
                                 display: 'flex',
@@ -1128,7 +1161,7 @@ function App() {
                           ))}
                         </div>
                       </div>
-                      <div style={chartContainerStyle}>
+                      <div className="chart-container" style={chartContainerStyle}>
                         <TradingViewChart
                           tokenAddress={selectedToken?.address}
                           isMobile={isMobile}
@@ -1137,7 +1170,7 @@ function App() {
                     </>
                   )}
                 </div>
-                <div style={tradeStyle} className="trading-panel">
+                <div style={tradeStyle} className={`trading-panel ${mobileView === 'trade' ? 'mobile-active' : ''}`}>
                   <SpotInterface selectedToken={selectedToken} />
                 </div>
               </div>
