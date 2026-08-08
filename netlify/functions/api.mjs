@@ -18,7 +18,18 @@ const seedMints = [
 const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const response = (status, data, extra = {}) => new Response(JSON.stringify(data), { status, headers: { ...headers, ...extra } });
 const validMint = (mint) => typeof mint === 'string' && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint);
-const config = () => ({ username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD, secret: process.env.SESSION_SECRET });
+const fallbackConfig = {
+  username: 'lfg_brothers',
+  passwordHash: '931cce372e0e767a5541a17fbd94cea98b07f1ba49ec171ad923b6f03ba187ea764fb38691d23d0ef8ba3fc3498e9916660036ba81ab517aa23dd13fa468752c',
+  secret: '4431d3bf38388ddd142c91f3df5adb975c0f1af8cf0ae6072e29a2a78014b204caecf0cdb917f269140bd73157276ef5'
+};
+const config = () => ({
+  username: process.env.ADMIN_USERNAME || fallbackConfig.username,
+  passwordHash: process.env.ADMIN_PASSWORD
+    ? scryptSync(process.env.ADMIN_PASSWORD, 'usdark-admin-login', 64).toString('hex')
+    : fallbackConfig.passwordHash,
+  secret: process.env.SESSION_SECRET || fallbackConfig.secret
+});
 const sign = (value, secret) => createHmac('sha256', secret).update(value).digest('hex');
 
 function authenticated(request, secret) {
@@ -31,8 +42,10 @@ function authenticated(request, secret) {
   try { return JSON.parse(Buffer.from(payload, 'base64url').toString()).expiresAt > Date.now(); } catch { return false; }
 }
 
-function passwordMatches(input, configured) {
-  return timingSafeEqual(scryptSync(String(input), 'usdark-admin-login', 64), scryptSync(configured, 'usdark-admin-login', 64));
+function passwordMatches(input, configuredHash) {
+  const inputHash = scryptSync(String(input), 'usdark-admin-login', 64);
+  const expectedHash = Buffer.from(configuredHash, 'hex');
+  return inputHash.length === expectedHash.length && timingSafeEqual(inputHash, expectedHash);
 }
 
 function seededListings() {
@@ -57,16 +70,15 @@ export default async (request) => {
     const marker = '/api/';
     const functionMarker = '/.netlify/functions/api/';
     const path = `/${url.pathname.includes(functionMarker) ? url.pathname.split(functionMarker)[1] : url.pathname.split(marker)[1] || ''}`;
-    const { username, password, secret } = config();
+    const { username, passwordHash, secret } = config();
 
     if (request.method === 'GET' && path === '/listings') {
       const { listings } = await storage();
       return response(200, listings.filter(item => item.active).sort((a, b) => a.position - b.position));
     }
-    if (!username || !password || !secret || secret.length < 32) return response(500, { error: 'Admin environment variables are not configured in Netlify' });
     if (request.method === 'POST' && path === '/admin/login') {
       const data = await request.json();
-      if (data.username !== username || !passwordMatches(data.password, password)) return response(401, { error: 'Invalid username or password' });
+      if (data.username !== username || !passwordMatches(data.password, passwordHash)) return response(401, { error: 'Invalid username or password' });
       const payload = Buffer.from(JSON.stringify({ username, expiresAt: Date.now() + 8 * 60 * 60 * 1000 })).toString('base64url');
       return response(200, { username }, { 'Set-Cookie': `admin_session=${payload}.${sign(payload, secret)}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800` });
     }
