@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node server/index.js --dev",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "node server/index.js",
+    "start": "node server/index.js"
   },
   "dependencies": {
     "@raydium-io/raydium-sdk-v2": "^0.2.29-alpha",

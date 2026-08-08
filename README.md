@@ -1,5 +1,15 @@
 # React + Vite
 
+## Listings administration
+
+Listings are persisted in `data/listings.json` and served by the Node API. On first run, the store is seeded with the markets that were previously hard-coded in the frontend.
+
+1. Copy `.env.example` to `.env` and set the admin credentials and a random session secret.
+2. Run `npm install` and `npm run dev`.
+3. Open `/auth/admin` to list, delist, relist, or permanently remove token mints.
+
+For production, run `npm run build` followed by `npm start`. Set `NODE_ENV=production` when the site is served through HTTPS so admin cookies are marked Secure. Back up `data/listings.json` as part of deployment persistence.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

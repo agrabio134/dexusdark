@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useRef, Component } from 'react';
 import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
+import { PublicKey, LAMPORTS_PER_SOL, VersionedTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { Flame, TrendingUp, Hash, RocketIcon } from 'lucide-react';
@@ -12,31 +11,6 @@ const SOL_MINT = 'So11111111111111111111111111111111111111112';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 const JUPITER_TOKEN_LIST = 'https://lite-api.jup.ag/tokens/v2/tag?query=verified';
 const USDARK_CA = '4EKDKWJDrqrCQtAD6j9sM5diTeZiKBepkEB8GLP9Dark';
-const JUP_MINT = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
-const JTO_MINT = 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL';
-const PUMP_MINT = 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn';
-const XBT = 'A8YHuvQBMAxXoZAZE72FyC8B7jKHo8RJyByXRRffpump';
-const DEEP = 'E7ErFx5dRoAxnDphWRmE8DjfJBr2fvjvnX3cgaj6pump';
-const PANDU = '4NGbC4RRrUjS78ooSN53Up7gSg4dGrj6F6dxpMWHbonk';
-const PFP = '5TfqNKZbn9AnNtzq8bbkyhKgcPGTfNDc9wNzFrTBpump';
-const FSJAL = 'GP7m3USdHDSrNoUzsZqZTboKaJiabFQShzgV2RkFnZyh';
-const ALPHA = '4k2HDtWVYMpHQSxts28HdMyK8AnJ8adkRF5cHnAKpump';
-const LENNY = 'Gc5hxBYZjxWNpt3B8XYbp4YoGCHSMfrJK7ex4GUTpump';
-
-const FOURTWENTY = 'CZy3nB9ET6SxBDdAnd7zcaGiPU8JnFQWCwdEZfWhpump';
-
-const PLX = '52KWGFoax5Ed1YbFctptXjSShv1P6R3SqUuo6Hk3pump';
-const SONIAN = '7aWo4u6iP4dXKvJCvahZL51a3ijL4PFM4RXZDnPdpump';
-const NEWLISTSS = 'GFJbQ7WDQry73iTaGkJcXKjvi1ViFTFmHSENgz92jFPP';
-const ENGRAVE = 'ADMiFUmFUz3tzLozh7yTy2zWe1soM61aE995TZqLpump';
-const JOBS = '6cNcXWqYvK9nhD1TsjJ1ZH1KATXcaPaRJtZPHyVkJoBs';
-const WURK = 'ALR5X2H6THn2VDPoMtkVwxVktcN1kQGvxCwLfejzpump';
-const LC_SHIB = '43YakhC3TcSuTgSXnxFgw8uKL8VkuLuFa4M6Bninpump';
-const PUMP2 = '5oBshGwHKNTSk4KrTridfMmNGWk39K3k8jnxm1hxpump';
-
-const LNCHR = '86ZnAujEVLmtnNazeCeT1zYR7hn2PeF5ZPEwUkTdpump';
-
-const SIMD = 'EMeugag3yfyvKqNKknGDWAudNALafZjbv9ByzCE8pump';
 class ErrorBoundary extends Component {
   state = { hasError: false, errorMessage: '' };
   static getDerivedStateFromError(error) {
@@ -249,7 +223,7 @@ function StyledModal({ isOpen, onClose, title, message, type = 'success', txid }
   );
 }
 
-function SpotInterface({ selectedToken, allTokens, setSelectedToken }) {
+function SpotInterface({ selectedToken }) {
   const wallet = useWallet();
   const { connection } = useConnection();
   const [side, setSide] = useState('buy');
@@ -591,11 +565,10 @@ function App() {
   const [tokens, setTokens] = useState([]);
   const [trendingTokens, setTrendingTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(null);
-  const [selectedPerpSymbol, setSelectedPerpSymbol] = useState('PERP_ETH_USDC');
+  const selectedPerpSymbol = 'PERP_ETH_USDC';
   const [loading, setLoading] = useState(true);
   const [tokenMeta, setTokenMeta] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
-  const network = WalletAdapterNetwork.Mainnet;
   const endpoint = useMemo(() => 'https://solana-rpc.publicnode.com', []);
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
 
@@ -637,18 +610,11 @@ function App() {
     const loadTokens = async () => {
       try {
         setLoading(true);
-        const allTokens = [];
-        const mints = [
-          USDARK_CA, XBT, DEEP, JUP_MINT, JTO_MINT,
-          PUMP_MINT, USDC_MINT, PANDU, PFP, FSJAL, ALPHA,
-          LENNY, FOURTWENTY, NEWLISTSS, ENGRAVE, JOBS, WURK, LC_SHIB, PUMP2, SIMD,LNCHR
-        ];
-
-
-
-
-
-        for (const mint of mints) {
+        const listingsResponse = await fetch('/api/listings');
+        if (!listingsResponse.ok) throw new Error('Unable to load managed listings');
+        const listings = await listingsResponse.json();
+        const mints = listings.map((listing) => listing.mint);
+        const allTokens = (await Promise.all(mints.map(async (mint) => {
           try {
             const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
             const data = await response.json();
@@ -663,14 +629,15 @@ function App() {
                 );
                 const pair = preferredPair || basePairs[0];
                 if (pair) {
-                  allTokens.push(pair);
+                  return pair;
                 }
               }
             }
           } catch (e) {
             console.error(`Error fetching token ${mint}:`, e);
           }
-        }
+          return null;
+        }))).filter(Boolean);
         const uniqueTokens = allTokens.map((pair) => ({
           address: pair.baseToken?.address || '',
           name: pair.baseToken?.name || 'Unknown',
@@ -701,10 +668,10 @@ function App() {
           .slice(0, 5);
         setTrendingTokens(topGainers);
         // Only set selectedToken if none is currently selected or if current selection is not in the new token list
-        if (!selectedToken || !enrichedTokens.some(t => t.address === selectedToken.address)) {
-          const darkToken = enrichedTokens.find(t => t.address === USDARK_CA) || enrichedTokens[0];
-          setSelectedToken(darkToken);
-        }
+        setSelectedToken((current) => {
+          if (current && enrichedTokens.some(t => t.address === current.address)) return current;
+          return enrichedTokens.find(t => t.address === USDARK_CA) || enrichedTokens[0] || null;
+        });
       } catch (error) {
         console.error('Error loading tokens:', error);
       } finally {
@@ -714,7 +681,7 @@ function App() {
     loadTokens();
     const interval = setInterval(loadTokens, 30000);
     return () => clearInterval(interval);
-  }, [tokenMeta, selectedToken]);
+  }, [tokenMeta]);
 
   const formatPrice = (price) => (price < 0.01 ? `$${price.toFixed(6)}` : `$${price.toFixed(2)}`);
   const formatNumber = (num) => {
@@ -722,8 +689,6 @@ function App() {
     if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
     return `$${(num / 1e3).toFixed(2)}K`;
   };
-
-  const medals = ['🥇', '🥈', '🥉', '🏅', '🎖️'];
 
   const mainContainerStyle = {
     display: 'grid',
@@ -1173,7 +1138,7 @@ function App() {
                   )}
                 </div>
                 <div style={tradeStyle} className="trading-panel">
-                  <SpotInterface selectedToken={selectedToken} allTokens={tokens} setSelectedToken={setSelectedToken} />
+                  <SpotInterface selectedToken={selectedToken} />
                 </div>
               </div>
             </div>
